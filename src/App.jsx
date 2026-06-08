@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <motion.main
-      className="grid min-h-screen grid-cols-1 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:overflow-hidden lg:p-5"
+      className="grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:gap-0 lg:overflow-hidden lg:p-5"
       initial={{ opacity: 0, scale: 0.985 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.55, ease: "easeOut" }}

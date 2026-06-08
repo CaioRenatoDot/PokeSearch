@@ -45,7 +45,7 @@ export default function StatBar({ stat }) {
 
   return (
     <motion.div
-      className="grid min-h-[72px] grid-cols-[124px_1fr_52px] items-center gap-3 rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-3 py-2 shadow-[inset_0_-4px_0_rgba(20,32,51,0.08)]"
+      className="grid min-h-[84px] grid-cols-[1fr_auto] items-center gap-2 rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-3 py-2 shadow-[inset_0_-4px_0_rgba(20,32,51,0.08)] sm:min-h-[72px] sm:grid-cols-[124px_1fr_52px] sm:gap-3"
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.32 }}
@@ -60,7 +60,7 @@ export default function StatBar({ stat }) {
         </span>
       </div>
 
-      <div className="rounded border-2 border-dex-dark bg-[#142033] p-1 shadow-[inset_0_0_0_2px_rgba(216,255,242,0.08)]">
+      <div className="col-span-2 rounded border-2 border-dex-dark bg-[#142033] p-1 shadow-[inset_0_0_0_2px_rgba(216,255,242,0.08)] sm:col-span-1">
         <div className="grid h-7 grid-cols-[repeat(16,minmax(0,1fr))] gap-1">
           {Array.from({ length: totalSegments }, (_, index) => {
             const isActive = index < activeSegments;

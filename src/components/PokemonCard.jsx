@@ -41,6 +41,10 @@ export default function PokemonCard({ pokemon }) {
   const spriteCount = countSprites(pokemon.sprites);
 
   function handleScroll(event) {
+    if (!window.matchMedia("(min-width: 1024px)").matches) {
+      return;
+    }
+
     const nextCompact = event.currentTarget.scrollTop > 70;
 
     if (nextCompact !== isCompact) {
@@ -50,7 +54,7 @@ export default function PokemonCard({ pokemon }) {
 
   return (
     <motion.article
-      className="scrollbar-none h-full w-full overflow-y-auto pr-1"
+      className="w-full pr-0 lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
       variants={cardVariants}
       initial="hidden"
       animate="show"
@@ -58,17 +62,17 @@ export default function PokemonCard({ pokemon }) {
       onScroll={handleScroll}
     >
       <motion.div
-        className={`sticky top-0 z-10 grid gap-5 rounded-lg p-3 transition-colors duration-300 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)] ${
+        className={`grid gap-4 rounded-lg p-0 transition-colors duration-300 sm:gap-5 lg:sticky lg:top-0 lg:z-10 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)] ${
           isCompact
             ? "border border-emerald-950/10 bg-dex-screen/95 shadow-[0_18px_30px_rgba(18,48,46,0.12)] backdrop-blur-sm"
-            : "min-h-full border border-transparent bg-transparent shadow-none"
+            : "border border-transparent bg-transparent shadow-none lg:min-h-full"
         }`}
         animate={{ scale: isCompact ? 0.985 : 1 }}
         transition={{ duration: 0.24, ease: "easeOut" }}
       >
         <motion.div
           className="grid place-items-center rounded-lg border border-emerald-950/15 bg-white/30 p-3"
-          animate={{ minHeight: isCompact ? 210 : 340 }}
+          animate={{ minHeight: isCompact ? 210 : 280 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
           variants={itemVariants}
         >
@@ -84,7 +88,7 @@ export default function PokemonCard({ pokemon }) {
           </motion.p>
           <motion.h2
             className="mt-2 font-display leading-tight capitalize text-dex-ink"
-            animate={{ fontSize: isCompact ? "2rem" : "3rem" }}
+            animate={{ fontSize: isCompact ? "2rem" : "clamp(2rem, 11vw, 3rem)" }}
             transition={{ duration: 0.24 }}
             variants={itemVariants}
           >
@@ -171,7 +175,7 @@ function InfoPanel({ title, children }) {
       viewport={{ once: true, amount: 0.22 }}
       transition={{ duration: 0.28 }}
     >
-      <h3 className="mb-4 font-pixel text-2xl font-black uppercase leading-6 text-dex-ink">{title}</h3>
+      <h3 className="mb-4 font-pixel text-xl font-black uppercase leading-6 text-dex-ink sm:text-2xl">{title}</h3>
       {children}
     </motion.div>
   );

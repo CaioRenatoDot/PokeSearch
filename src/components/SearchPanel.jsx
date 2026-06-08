@@ -15,22 +15,22 @@ export default function SearchPanel({
 }) {
   return (
     <motion.aside
-      className="relative z-10 flex min-h-0 flex-col gap-5 overflow-hidden rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-5 text-white shadow-dex lg:h-full lg:rounded-r-none lg:p-7"
+      className="relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-5 lg:overflow-hidden lg:rounded-r-none lg:p-7"
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.48, ease: "easeOut" }}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <motion.div
-          className="grid h-20 w-20 shrink-0 place-items-center rounded-full border-[6px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)]"
+          className="grid h-16 w-16 shrink-0 place-items-center rounded-full border-[5px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)] sm:h-20 sm:w-20 sm:border-[6px]"
           animate={{ scale: [1, 1.045, 1] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         >
-          <span className="block h-6 w-6 -translate-x-2 -translate-y-2 rounded-full bg-white/80" />
+          <span className="block h-5 w-5 -translate-x-1.5 -translate-y-1.5 rounded-full bg-white/80 sm:h-6 sm:w-6 sm:-translate-x-2 sm:-translate-y-2" />
         </motion.div>
         <div>
           <p className="font-display text-[10px] uppercase leading-5 text-white/70">PokeSearch</p>
-          <h1 className="font-display text-3xl leading-tight tracking-normal sm:text-4xl">Pokedex</h1>
+          <h1 className="font-display text-2xl leading-tight tracking-normal sm:text-4xl">Pokedex</h1>
         </div>
       </div>
 

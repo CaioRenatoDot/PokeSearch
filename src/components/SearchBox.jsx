@@ -31,7 +31,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
         />
         {suggestions.length ? (
           <motion.div
-            className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-lg border-2 border-white/30 bg-dex-dark/95 shadow-dex"
+            className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 max-h-56 overflow-y-auto rounded-lg border-2 border-white/30 bg-dex-dark/95 shadow-dex"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}

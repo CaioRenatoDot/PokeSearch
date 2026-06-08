@@ -33,10 +33,10 @@ export default function PokemonSprite({ pokemon, compact = false, mode = "animat
           sprite.isAnimated
             ? compact
               ? "max-h-[24vh] max-w-[74%] xl:max-h-[30vh] xl:max-w-[74%] [image-rendering:pixelated]"
-              : "max-h-[39vh] max-w-[90%] xl:max-h-[58vh] xl:max-w-[90%] [image-rendering:pixelated]"
+              : "max-h-[32vh] max-w-[90%] sm:max-h-[39vh] xl:max-h-[58vh] xl:max-w-[90%] [image-rendering:pixelated]"
             : compact
               ? "max-h-[28vh] max-w-[78%] xl:max-h-[34vh] xl:max-w-[78%]"
-              : "max-h-[43vh] max-w-[92%] xl:max-h-[68vh] xl:max-w-[92%]"
+              : "max-h-[36vh] max-w-[92%] sm:max-h-[43vh] xl:max-h-[68vh] xl:max-w-[92%]"
         }`}
         src={sprite.src}
         alt={formatName(pokemon.name)}
