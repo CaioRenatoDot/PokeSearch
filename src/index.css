@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Minecraft";
+    src: url("./assets/fonts/MinecraftRegular.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Minecraft";
+    src: url("./assets/fonts/MinecraftBold.woff") format("woff");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    font-family: "Minecraft", ui-sans-serif, system-ui;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    background: #efeae0;
+    color: theme("colors.dex.ink");
+    font-family: "Minecraft", ui-sans-serif, system-ui;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .bg-page {
+    background:
+      radial-gradient(circle at 18% 16%, rgba(255, 200, 74, 0.38), transparent 26%),
+      radial-gradient(circle at 78% 14%, rgba(62, 184, 255, 0.34), transparent 24%),
+      linear-gradient(135deg, #f4efe5, #e7ded1);
+  }
+
+  .screen-lines {
+    background-image: linear-gradient(rgba(18, 48, 46, 0.07) 1px, transparent 1px);
+    background-size: 100% 14px;
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
