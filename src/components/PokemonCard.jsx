@@ -29,7 +29,6 @@ const itemVariants = {
 };
 
 export default function PokemonCard({ pokemon }) {
-  const [isCompact, setIsCompact] = useState(false);
   const [spriteMode, setSpriteMode] = useState("animated");
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
@@ -40,18 +39,6 @@ export default function PokemonCard({ pokemon }) {
   const moves = pokemon.moves.slice(0, 10).map(item => formatName(item.move.name));
   const spriteCount = countSprites(pokemon.sprites);
 
-  function handleScroll(event) {
-    if (!window.matchMedia("(min-width: 1024px)").matches) {
-      return;
-    }
-
-    const nextCompact = event.currentTarget.scrollTop > 70;
-
-    if (nextCompact !== isCompact) {
-      setIsCompact(nextCompact);
-    }
-  }
-
   return (
     <motion.article
       className="w-full pr-0 lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
@@ -59,24 +46,19 @@ export default function PokemonCard({ pokemon }) {
       initial="hidden"
       animate="show"
       exit="exit"
-      onScroll={handleScroll}
     >
       <motion.div
-        className={`grid gap-4 rounded-lg p-0 transition-colors duration-300 sm:gap-5 lg:sticky lg:top-0 lg:z-10 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)] ${
-          isCompact
-            ? "border border-emerald-950/10 bg-dex-screen/95 shadow-[0_18px_30px_rgba(18,48,46,0.12)] backdrop-blur-sm"
-            : "border border-transparent bg-transparent shadow-none lg:min-h-full"
-        }`}
-        animate={{ scale: isCompact ? 0.985 : 1 }}
+        className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)]"
+        animate={{ scale: 1 }}
         transition={{ duration: 0.24, ease: "easeOut" }}
       >
         <motion.div
           className="grid place-items-center rounded-lg border border-emerald-950/15 bg-white/30 p-3"
-          animate={{ minHeight: isCompact ? 210 : 280 }}
+          animate={{ minHeight: 280 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
           variants={itemVariants}
         >
-          <PokemonSprite pokemon={pokemon} compact={isCompact} mode={spriteMode} />
+          <PokemonSprite pokemon={pokemon} mode={spriteMode} />
         </motion.div>
 
         <motion.div
@@ -88,7 +70,7 @@ export default function PokemonCard({ pokemon }) {
           </motion.p>
           <motion.h2
             className="mt-2 font-display leading-tight capitalize text-dex-ink"
-            animate={{ fontSize: isCompact ? "2rem" : "clamp(2rem, 11vw, 3rem)" }}
+            animate={{ fontSize: "clamp(2rem, 11vw, 3rem)" }}
             transition={{ duration: 0.24 }}
             variants={itemVariants}
           >
@@ -104,9 +86,9 @@ export default function PokemonCard({ pokemon }) {
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
 
           <motion.div className="mt-6 grid gap-3 sm:grid-cols-3" variants={itemVariants}>
-            <FactCard icon="ruler" label="Altura" value={`${(pokemon.height / 10).toFixed(1)} m`} compact={isCompact} />
-            <FactCard icon="weight" label="Peso" value={`${(pokemon.weight / 10).toFixed(1)} kg`} compact={isCompact} />
-            <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} compact={isCompact} />
+            <FactCard icon="ruler" label="Altura" value={`${(pokemon.height / 10).toFixed(1)} m`} />
+            <FactCard icon="weight" label="Peso" value={`${(pokemon.weight / 10).toFixed(1)} kg`} />
+            <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
           </motion.div>
         </motion.div>
       </motion.div>

@@ -29,7 +29,7 @@ export default function PokemonSprite({ pokemon, compact = false, mode = "animat
         transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
       />
       <img
-        className={`relative z-10 h-full w-full object-contain drop-shadow-[0_26px_22px_rgba(18,48,46,0.22)] ${
+        className={`pokemon-sprite-image relative z-10 h-full w-full object-contain drop-shadow-[0_26px_22px_rgba(18,48,46,0.22)] ${
           sprite.isAnimated
             ? compact
               ? "max-h-[24vh] max-w-[74%] xl:max-h-[30vh] xl:max-w-[74%] [image-rendering:pixelated]"

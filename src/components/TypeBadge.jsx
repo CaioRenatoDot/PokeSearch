@@ -5,7 +5,7 @@ import { formatName } from "../utils/formatters.js";
 export default function TypeBadge({ type }) {
   return (
     <motion.span
-      className={`rounded-lg px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-white ${typeStyles[type] || "bg-dex-dark"}`}
+      className={`type-badge rounded-lg px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-white ${typeStyles[type] || "bg-dex-dark"}`}
       initial={{ opacity: 0, y: 10, scale: 0.94 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.25 }}

@@ -11,18 +11,20 @@ export default function SearchPanel({
   suggestions,
   history,
   onSearch,
-  onRandom
+  onRandom,
+  isMonochrome,
+  onToggleDisplayMode
 }) {
   return (
     <motion.aside
-      className="relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-5 lg:overflow-hidden lg:rounded-r-none lg:p-7"
+      className="search-panel relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-5 lg:overflow-hidden lg:rounded-r-none lg:p-7"
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.48, ease: "easeOut" }}
     >
       <div className="flex items-center gap-3 sm:gap-4">
         <motion.div
-          className="grid h-16 w-16 shrink-0 place-items-center rounded-full border-[5px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)] sm:h-20 sm:w-20 sm:border-[6px]"
+          className="gb-lens grid h-16 w-16 shrink-0 place-items-center rounded-full border-[5px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)] sm:h-20 sm:w-20 sm:border-[6px]"
           animate={{ scale: [1, 1.045, 1] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -33,6 +35,27 @@ export default function SearchPanel({
           <h1 className="font-display text-2xl leading-tight tracking-normal sm:text-4xl">Pokedex</h1>
         </div>
       </div>
+
+      <motion.button
+        className={`theme-toggle inline-flex min-h-14 items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left font-pixel font-black uppercase leading-5 transition ${
+          isMonochrome
+            ? "border-[#0f380f] bg-[#9bbc0f] text-[#0f380f] shadow-[inset_0_-4px_0_rgba(15,56,15,0.2)]"
+            : "border-white/25 bg-slate-950/20 text-white hover:bg-white/20"
+        }`}
+        type="button"
+        onClick={onToggleDisplayMode}
+        aria-pressed={isMonochrome}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <span className="grid gap-1">
+          <span className="text-sm leading-4 opacity-70">Tela</span>
+          <span className="text-xl leading-5">{isMonochrome ? "Game Boy" : "Colorida"}</span>
+        </span>
+        <span className="grid h-9 w-12 shrink-0 place-items-center rounded border-2 border-current bg-current/10 text-base">
+          {isMonochrome ? "GB" : "RGB"}
+        </span>
+      </motion.button>
 
       <SearchBox
         query={query}
@@ -49,19 +72,6 @@ export default function SearchPanel({
         historyItems={history}
         onSelect={onSearch}
       />
-
-      <motion.div
-        className="mt-auto hidden rounded-lg border border-white/20 bg-slate-950/20 p-4 lg:block"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.32, duration: 0.36 }}
-      >
-        <p className="mb-3 font-pixel text-base font-black uppercase leading-5 text-white/60">Atalhos</p>
-        <div className="space-y-3 text-base font-semibold leading-5 text-white/80">
-          <p>Use as abas para alternar entre favoritos rápidos, sugestões da busca e histórico.</p>
-          <p>A lista interna rola sem empurrar o painel inteiro.</p>
-        </div>
-      </motion.div>
 
       <PokeballMark className="absolute bottom-6 right-6 hidden opacity-10 lg:block" />
     </motion.aside>

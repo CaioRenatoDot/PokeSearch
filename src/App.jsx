@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
 
 export default function App() {
+  const [isMonochrome, setIsMonochrome] = useState(false);
   const {
     query,
     setQuery,
@@ -18,7 +20,9 @@ export default function App() {
 
   return (
     <motion.main
-      className="grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:gap-0 lg:overflow-hidden lg:p-5"
+      className={`app-shell grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:gap-0 lg:overflow-hidden lg:p-5 ${
+        isMonochrome ? "theme-monochrome" : ""
+      }`}
       initial={{ opacity: 0, scale: 0.985 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
@@ -31,6 +35,8 @@ export default function App() {
         history={history}
         onSearch={searchPokemon}
         onRandom={searchRandomPokemon}
+        isMonochrome={isMonochrome}
+        onToggleDisplayMode={() => setIsMonochrome(current => !current)}
       />
       <PokemonScreen pokemon={pokemon} status={status} message={message} />
     </motion.main>

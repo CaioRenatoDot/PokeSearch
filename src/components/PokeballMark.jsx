@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 export default function PokeballMark({ spin = false, className = "" }) {
   return (
     <motion.span
-      className={`relative block h-24 w-24 rounded-full border-[8px] border-dex-dark bg-[linear-gradient(#d92f34_0_47%,#151927_47%_56%,white_56%)] ${className}`}
+      className={`pokeball-mark relative block h-24 w-24 rounded-full border-[8px] border-dex-dark bg-[linear-gradient(#d92f34_0_47%,#151927_47%_56%,white_56%)] ${className}`}
       animate={spin ? { rotate: 360 } : { rotate: 0 }}
       transition={spin ? { duration: 0.9, repeat: Infinity, ease: "linear" } : { duration: 0.25 }}
     >
