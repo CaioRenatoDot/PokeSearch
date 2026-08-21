@@ -4,6 +4,7 @@ import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
+import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
@@ -48,6 +49,7 @@ export default function PokemonCard({
   const genus = getGenus(species);
   const habitat = getHabitat(species);
   const evolutionStages = useEvolutionChain(species);
+  const effectiveness = useTypeEffectiveness(pokemon.types.map(item => item.type.name));
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
     name: formatName(item.ability.name),
@@ -187,6 +189,29 @@ export default function PokemonCard({
                 <StatBar key={stat.stat.name} stat={stat} />
               ))}
             </div>
+          </InfoPanel>
+
+          <InfoPanel title="Dano recebido">
+            {effectiveness.length ? (
+              <div className="grid gap-3">
+                {effectiveness.map(group => (
+                  <div key={group.multiplier} className="grid gap-2">
+                    <span className="font-pixel text-lg font-black uppercase leading-5 text-emerald-950/60">
+                      {group.label}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {group.types.map(type => (
+                        <TypeBadge key={type} type={type} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="font-display text-base leading-6 text-emerald-950/60">
+                Sem vantagens ou fraquezas fora do normal.
+              </p>
+            )}
           </InfoPanel>
 
           <InfoPanel title="Golpes iniciais">
