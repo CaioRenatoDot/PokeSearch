@@ -3,12 +3,14 @@ import { motion } from "motion/react";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
+import { useSoundPreference } from "./hooks/useSoundPreference.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
 
 const DEFAULT_TITLE = "PokeSearch | Pokedex";
 
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
+  const { isSoundOn, toggleSound } = useSoundPreference();
   const {
     query,
     setQuery,
@@ -46,6 +48,8 @@ export default function App() {
         onRandom={searchRandomPokemon}
         isMonochrome={isMonochrome}
         onToggleDisplayMode={() => setIsMonochrome(current => !current)}
+        isSoundOn={isSoundOn}
+        onToggleSound={toggleSound}
       />
       <PokemonScreen pokemon={pokemon} status={status} message={message} />
     </motion.main>

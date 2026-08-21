@@ -5,6 +5,8 @@ const iconPaths = {
   search: "m21 21-5-5m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z",
   shuffle: "M16 3h5v5m0-5-6 6M4 7h4l8 10h5m0 0h-5v-5M4 17h4l2.5-3.1",
   sparkles: "M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Zm6 10 .8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8L18 13Z",
+  volume: "M11 5 6 9H3v6h3l5 4V5Zm5.6 3.4a5 5 0 0 1 0 7.2M19.4 6a9 9 0 0 1 0 12",
+  volumeOff: "M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6",
   weight: "M8 8a4 4 0 0 1 8 0m-9 0h10l2 12H5L7 8Zm5-2v3",
   zap: "M13 2 4 14h7l-1 8 9-12h-7l1-8"
 };

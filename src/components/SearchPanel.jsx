@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { suggestions as quickSuggestions } from "../data/pokemon.js";
+import Icon from "./Icon.jsx";
 import PanelTabs from "./PanelTabs.jsx";
 import PokeballMark from "./PokeballMark.jsx";
 import SearchBox from "./SearchBox.jsx";
@@ -13,7 +14,9 @@ export default function SearchPanel({
   onSearch,
   onRandom,
   isMonochrome,
-  onToggleDisplayMode
+  onToggleDisplayMode,
+  isSoundOn,
+  onToggleSound
 }) {
   return (
     <motion.aside
@@ -36,26 +39,45 @@ export default function SearchPanel({
         </div>
       </div>
 
-      <motion.button
-        className={`theme-toggle inline-flex min-h-14 items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left font-pixel font-black uppercase leading-5 transition ${
-          isMonochrome
-            ? "border-[#0f380f] bg-[#9bbc0f] text-[#0f380f] shadow-[inset_0_-4px_0_rgba(15,56,15,0.2)]"
-            : "border-white/25 bg-slate-950/20 text-white hover:bg-white/20"
-        }`}
-        type="button"
-        onClick={onToggleDisplayMode}
-        aria-pressed={isMonochrome}
-        whileHover={{ y: -2 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <span className="grid gap-1">
-          <span className="text-sm leading-4 opacity-70">Tela</span>
-          <span className="text-xl leading-5">{isMonochrome ? "Game Boy" : "Colorida"}</span>
-        </span>
-        <span className="grid h-9 w-12 shrink-0 place-items-center rounded border-2 border-current bg-current/10 text-base">
-          {isMonochrome ? "GB" : "RGB"}
-        </span>
-      </motion.button>
+      <div className="grid grid-cols-[1fr_auto] gap-2">
+        <motion.button
+          className={`theme-toggle inline-flex min-h-14 items-center justify-between gap-3 rounded-lg border-2 px-4 py-3 text-left font-pixel font-black uppercase leading-5 transition ${
+            isMonochrome
+              ? "border-[#0f380f] bg-[#9bbc0f] text-[#0f380f] shadow-[inset_0_-4px_0_rgba(15,56,15,0.2)]"
+              : "border-white/25 bg-slate-950/20 text-white hover:bg-white/20"
+          }`}
+          type="button"
+          onClick={onToggleDisplayMode}
+          aria-pressed={isMonochrome}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <span className="grid gap-1">
+            <span className="text-sm leading-4 opacity-70">Tela</span>
+            <span className="text-xl leading-5">{isMonochrome ? "Game Boy" : "Colorida"}</span>
+          </span>
+          <span className="grid h-9 w-12 shrink-0 place-items-center rounded border-2 border-current bg-current/10 text-base">
+            {isMonochrome ? "GB" : "RGB"}
+          </span>
+        </motion.button>
+
+        <motion.button
+          className={`inline-flex min-h-14 w-14 items-center justify-center rounded-lg border-2 transition ${
+            isSoundOn
+              ? "border-white/25 bg-slate-950/20 text-white hover:bg-white/20"
+              : "border-white/15 bg-white/5 text-white/45 hover:bg-white/15"
+          }`}
+          type="button"
+          onClick={onToggleSound}
+          aria-pressed={isSoundOn}
+          aria-label={isSoundOn ? "Desligar sons" : "Ligar sons"}
+          title={isSoundOn ? "Desligar sons" : "Ligar sons"}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Icon name={isSoundOn ? "volume" : "volumeOff"} size={22} strokeWidth={3} />
+        </motion.button>
+      </div>
 
       <SearchBox
         query={query}

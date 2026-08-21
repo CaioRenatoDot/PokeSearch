@@ -1,5 +1,35 @@
+const SOUND_STORAGE_KEY = "pokesearch:sound";
+
 let audioContext;
 let currentCry;
+let isSoundOn = readSoundPreference();
+
+function readSoundPreference() {
+  try {
+    return window.localStorage.getItem(SOUND_STORAGE_KEY) !== "off";
+  } catch {
+    // Navegação privada pode bloquear o storage: o som fica ligado só nesta sessão.
+    return true;
+  }
+}
+
+export function isSoundEnabled() {
+  return isSoundOn;
+}
+
+export function setSoundEnabled(enabled) {
+  isSoundOn = enabled;
+
+  if (!enabled) {
+    currentCry?.pause();
+  }
+
+  try {
+    window.localStorage.setItem(SOUND_STORAGE_KEY, enabled ? "on" : "off");
+  } catch {
+    // Sem storage a preferência vale só para esta sessão.
+  }
+}
 
 function getAudioContext() {
   audioContext ||= new AudioContext();
@@ -24,6 +54,8 @@ function tone(frequency, start, duration, type = "square", volume = 0.08) {
 }
 
 export function playSearchSound(kind) {
+  if (!isSoundOn) return;
+
   try {
     const context = getAudioContext();
     const now = context.currentTime;
@@ -43,6 +75,8 @@ export function playSearchSound(kind) {
 }
 
 export function playPokemonCry(cryUrl) {
+  if (!isSoundOn) return;
+
   if (!cryUrl) {
     playSearchSound("success");
     return;
