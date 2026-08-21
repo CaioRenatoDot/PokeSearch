@@ -52,7 +52,7 @@ export default function PokemonGrid({ browser, onSelect }) {
               whileTap={{ scale: 0.97 }}
             >
               <img
-                className="mx-auto h-20 w-20 object-contain [image-rendering:pixelated]"
+                className="pokemon-sprite-image mx-auto h-20 w-20 object-contain [image-rendering:pixelated]"
                 src={getSpriteUrlById(entry.id)}
                 alt=""
                 loading="lazy"
