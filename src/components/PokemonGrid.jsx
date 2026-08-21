@@ -43,13 +43,11 @@ export default function PokemonGrid({ browser, onSelect }) {
       {visibleList.length ? (
         <div className="grid grid-cols-2 gap-3 pb-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {visibleList.map(entry => (
-            <motion.button
+            <button
               key={entry.name}
-              className="grid gap-1 rounded-lg border-2 border-emerald-950/20 bg-white/45 p-2 text-center shadow-[inset_0_-4px_0_rgba(20,32,51,0.06)] transition hover:bg-white/75"
+              className="grid gap-1 rounded-lg border-2 border-emerald-950/20 bg-white/45 p-2 text-center shadow-[inset_0_-4px_0_rgba(20,32,51,0.06)] transition duration-200 hover:-translate-y-1 hover:bg-white/75 active:scale-[0.97] motion-reduce:transform-none"
               type="button"
               onClick={() => onSelect(entry.name)}
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.97 }}
             >
               <img
                 className="pokemon-sprite-image mx-auto h-20 w-20 object-contain [image-rendering:pixelated]"
@@ -67,7 +65,7 @@ export default function PokemonGrid({ browser, onSelect }) {
               <span className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">
                 {formatSearchLabel(entry.name)}
               </span>
-            </motion.button>
+            </button>
           ))}
         </div>
       ) : (
