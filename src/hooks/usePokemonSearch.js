@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { getPokemon, getPokemonList } from "../api/pokeApi.js";
 import { normalizePokemonQuery } from "../utils/search.js";
 import { playSearchSound } from "../utils/sounds.js";
+import { readPokemonFromUrl, writePokemonToUrl } from "../utils/url.js";
 
-export function usePokemonSearch(initialQuery = "") {
-  const [query, setQuery] = useState(initialQuery);
+export function usePokemonSearch(fallbackQuery = "") {
+  const [query, setQuery] = useState(() => readPokemonFromUrl() || fallbackQuery);
   const [pokemon, setPokemon] = useState(null);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
@@ -36,6 +37,7 @@ export function usePokemonSearch(initialQuery = "") {
       setPokemon(data);
       setStatus("ready");
       setHistory(current => [data.name, ...current.filter(name => name !== data.name)].slice(0, 12));
+      writePokemonToUrl(data.name);
       playSearchSound("success");
     } catch (error) {
       setPokemon(null);
@@ -60,8 +62,10 @@ export function usePokemonSearch(initialQuery = "") {
       .then(setPokemonList)
       .catch(() => setPokemonList([]));
 
-    if (initialQuery) {
-      searchPokemon(initialQuery);
+    const startupQuery = readPokemonFromUrl() || fallbackQuery;
+
+    if (startupQuery) {
+      searchPokemon(startupQuery);
     }
   }, []);
 
