@@ -251,3 +251,16 @@
     drop-shadow(9px 9px 0 rgba(15, 56, 15, 0.2));
   image-rendering: pixelated;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .app-shell * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
