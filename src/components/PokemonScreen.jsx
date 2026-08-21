@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
+import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import EmptyState from "./EmptyState.jsx";
 import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
@@ -13,6 +14,7 @@ export default function PokemonScreen({ pokemon, status, message }) {
     >
       <motion.div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1/3 bg-gradient-to-b from-transparent via-white/35 to-transparent"
+        aria-hidden="true"
         animate={{ y: ["-120%", "320%"] }}
         transition={{
           duration: 1.2,
@@ -21,7 +23,11 @@ export default function PokemonScreen({ pokemon, status, message }) {
           ease: "easeInOut"
         }}
       />
-      <div className="screen-lines pointer-events-none absolute inset-0" />
+      <div className="screen-lines pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      <p className="sr-only" role="status" aria-live="polite">
+        {buildStatusAnnouncement(pokemon, status, message)}
+      </p>
 
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
@@ -38,4 +44,14 @@ export default function PokemonScreen({ pokemon, status, message }) {
       </AnimatePresence>
     </motion.section>
   );
+}
+
+function buildStatusAnnouncement(pokemon, status, message) {
+  if (status === "loading") return "Consultando a Pokedex.";
+  if (status === "error") return message || "Não consegui concluir a busca.";
+  if (status === "ready" && pokemon) {
+    return `${formatName(pokemon.name)}, ${formatPokemonNumber(pokemon.id)}, carregado na tela.`;
+  }
+
+  return "";
 }

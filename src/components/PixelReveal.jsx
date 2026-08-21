@@ -17,6 +17,7 @@ export default function PixelReveal({ triggerKey }) {
     <motion.div
       key={triggerKey}
       className="pointer-events-none absolute inset-0 z-20 grid overflow-hidden bg-emerald-950/10"
+      aria-hidden="true"
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`

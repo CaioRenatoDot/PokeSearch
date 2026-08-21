@@ -1,11 +1,74 @@
+import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { formatSearchLabel } from "../utils/search.js";
 import Icon from "./Icon.jsx";
 
 export default function SearchBox({ query, setQuery, status, suggestions = [], onSearch, onRandom }) {
+  const listId = useId();
+  const listRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isListDismissed, setIsListDismissed] = useState(false);
+
+  const isListOpen = suggestions.length > 0 && !isListDismissed;
+  const activeOptionId = isListOpen && activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined;
+  const suggestionsKey = suggestions.join("|");
+
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [suggestionsKey]);
+
+  useEffect(() => {
+    if (activeIndex < 0 || !listRef.current) return;
+    listRef.current.children[activeIndex]?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  function handleChange(event) {
+    setQuery(event.target.value);
+    setIsListDismissed(false);
+  }
+
+  function handleSelect(name) {
+    setIsListDismissed(true);
+    setActiveIndex(-1);
+    onSearch(name);
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
+    setIsListDismissed(true);
     onSearch(query);
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      setIsListDismissed(true);
+      setActiveIndex(-1);
+      return;
+    }
+
+    if (!isListOpen) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex(current => (current + 1) % suggestions.length);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex(current => (current <= 0 ? suggestions.length - 1 : current - 1));
+      return;
+    }
+
+    if (event.key === "Enter" && activeIndex >= 0) {
+      event.preventDefault();
+      handleSelect(suggestions[activeIndex]);
+      return;
+    }
+
+    if (event.key === "Tab") {
+      setIsListDismissed(true);
+    }
   }
 
   return (
@@ -18,34 +81,57 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       <label className="sr-only" htmlFor="pokemonInput">
         Nome ou número do Pokémon
       </label>
+      <p className="sr-only" id={`${listId}-hint`}>
+        Use as setas para cima e para baixo para navegar pelas sugestões e Enter para escolher.
+      </p>
       <div className="relative min-w-0">
         <input
           id="pokemonInput"
           value={query}
-          onChange={event => setQuery(event.target.value)}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
           className="h-14 w-full min-w-0 rounded-lg border-0 bg-white px-4 font-pixel text-xl font-semibold text-dex-ink outline-none ring-4 ring-transparent transition placeholder:text-dex-ink/45 focus:ring-sky-300/70"
           placeholder="Digite nome ou número"
           type="search"
           autoComplete="off"
           spellCheck={false}
+          role="combobox"
+          aria-expanded={isListOpen}
+          aria-controls={isListOpen ? listId : undefined}
+          aria-activedescendant={activeOptionId}
+          aria-autocomplete="list"
+          aria-describedby={`${listId}-hint`}
         />
-        {suggestions.length ? (
+        {isListOpen ? (
           <motion.div
-            className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 max-h-56 overflow-y-auto rounded-lg border-2 border-white/30 bg-dex-dark/95 shadow-dex"
+            className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-lg border-2 border-white/30 bg-dex-dark/95 shadow-dex"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
           >
-            {suggestions.map(name => (
-              <button
-                key={name}
-                className="block w-full px-4 py-2 text-left font-pixel text-lg font-black uppercase text-white transition hover:bg-white/15"
-                type="button"
-                onClick={() => onSearch(name)}
-              >
-                {formatSearchLabel(name)}
-              </button>
-            ))}
+            <div
+              className="max-h-56 overflow-y-auto"
+              id={listId}
+              ref={listRef}
+              role="listbox"
+              aria-label="Sugestões de Pokémon"
+            >
+              {suggestions.map((name, index) => (
+                <div
+                  key={name}
+                  id={`${listId}-option-${index}`}
+                  className={`cursor-pointer px-4 py-2 text-left font-pixel text-lg font-black uppercase text-white transition ${
+                    index === activeIndex ? "bg-white/20" : "hover:bg-white/15"
+                  }`}
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  onClick={() => handleSelect(name)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                >
+                  {formatSearchLabel(name)}
+                </div>
+              ))}
+            </div>
           </motion.div>
         ) : null}
       </div>
