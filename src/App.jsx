@@ -5,12 +5,14 @@ import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
 import { useSoundPreference } from "./hooks/useSoundPreference.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
+import { usePokemonBrowser } from "./hooks/usePokemonBrowser.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
 
 const DEFAULT_TITLE = "PokeSearch | Pokedex";
 
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
+  const [view, setView] = useState("detail");
   const { isSoundOn, toggleSound } = useSoundPreference();
   const {
     query,
@@ -19,6 +21,7 @@ export default function App() {
     status,
     message,
     filteredSuggestions,
+    pokemonList,
     history,
     searchPokemon,
     searchRandomPokemon,
@@ -27,11 +30,24 @@ export default function App() {
     hasPreviousPokemon,
     hasNextPokemon
   } = usePokemonSearch("pikachu");
+  const browser = usePokemonBrowser(pokemonList);
+
+  function showDetail(action) {
+    return (...args) => {
+      setView("detail");
+      action(...args);
+    };
+  }
+
+  const handleSearch = showDetail(searchPokemon);
+  const handleRandom = showDetail(searchRandomPokemon);
+  const handlePrevious = showDetail(goToPreviousPokemon);
+  const handleNext = showDetail(goToNextPokemon);
 
   useKeyboardShortcuts({
-    onPrevious: goToPreviousPokemon,
-    onNext: goToNextPokemon,
-    onRandom: searchRandomPokemon
+    onPrevious: handlePrevious,
+    onNext: handleNext,
+    onRandom: handleRandom
   });
 
   useEffect(() => {
@@ -55,20 +71,25 @@ export default function App() {
         status={status}
         suggestions={filteredSuggestions}
         history={history}
-        onSearch={searchPokemon}
-        onRandom={searchRandomPokemon}
+        onSearch={handleSearch}
+        onRandom={handleRandom}
         isMonochrome={isMonochrome}
         onToggleDisplayMode={() => setIsMonochrome(current => !current)}
         isSoundOn={isSoundOn}
         onToggleSound={toggleSound}
+        view={view}
+        onChangeView={setView}
       />
       <PokemonScreen
         pokemon={pokemon}
         status={status}
         message={message}
+        view={view}
+        browser={browser}
+        onSelectFromGrid={handleSearch}
         navigation={{
-          onPrevious: goToPreviousPokemon,
-          onNext: goToNextPokemon,
+          onPrevious: handlePrevious,
+          onNext: handleNext,
           hasPrevious: hasPreviousPokemon,
           hasNext: hasNextPokemon
         }}

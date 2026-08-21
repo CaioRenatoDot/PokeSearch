@@ -17,8 +17,9 @@ export function usePokemonSearch(fallbackQuery = "") {
 
   const normalizedQuery = normalizePokemonQuery(query);
   const filteredSuggestions = pokemonList
-    .filter(name => normalizedQuery && name.includes(normalizedQuery) && name !== normalizedQuery)
-    .slice(0, 6);
+    .filter(({ name }) => normalizedQuery && name.includes(normalizedQuery) && name !== normalizedQuery)
+    .slice(0, 6)
+    .map(({ name }) => name);
 
   async function searchPokemon(nextQuery) {
     const cleanQuery = normalizePokemonQuery(nextQuery);
@@ -63,8 +64,8 @@ export function usePokemonSearch(fallbackQuery = "") {
 
   function searchRandomPokemon() {
     if (pokemonList.length) {
-      const randomName = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-      searchPokemon(randomName);
+      const randomEntry = pokemonList[Math.floor(Math.random() * pokemonList.length)];
+      searchPokemon(randomEntry.name);
       return;
     }
 
@@ -90,6 +91,7 @@ export function usePokemonSearch(fallbackQuery = "") {
     status,
     message,
     filteredSuggestions,
+    pokemonList,
     history,
     searchPokemon,
     searchRandomPokemon,

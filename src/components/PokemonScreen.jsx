@@ -3,8 +3,11 @@ import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import EmptyState from "./EmptyState.jsx";
 import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
+import PokemonGrid from "./PokemonGrid.jsx";
 
-export default function PokemonScreen({ pokemon, status, message, navigation }) {
+export default function PokemonScreen({ pokemon, status, message, navigation, view, browser, onSelectFromGrid }) {
+  const isBrowsing = view === "browse";
+
   return (
     <motion.section
       className="pokemon-screen relative min-h-[70dvh] overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
@@ -31,7 +34,9 @@ export default function PokemonScreen({ pokemon, status, message, navigation }) 
 
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
-          {status === "ready" && pokemon ? (
+          {isBrowsing ? (
+            <PokemonGrid key="grid" browser={browser} onSelect={onSelectFromGrid} />
+          ) : status === "ready" && pokemon ? (
             <PokemonCard
               key={pokemon.id}
               pokemon={pokemon}
@@ -47,7 +52,9 @@ export default function PokemonScreen({ pokemon, status, message, navigation }) 
       </div>
 
       <AnimatePresence>
-        {status === "ready" && pokemon ? <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} /> : null}
+        {!isBrowsing && status === "ready" && pokemon ? (
+          <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} />
+        ) : null}
       </AnimatePresence>
     </motion.section>
   );

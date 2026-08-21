@@ -34,3 +34,9 @@ export function getPokemonSprite(pokemon, mode = "animated") {
     mode
   };
 }
+
+const SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
+export function getSpriteUrlById(id) {
+  return `${SPRITE_BASE_URL}/${id}.png`;
+}

@@ -5,6 +5,11 @@ import PanelTabs from "./PanelTabs.jsx";
 import PokeballMark from "./PokeballMark.jsx";
 import SearchBox from "./SearchBox.jsx";
 
+const viewOptions = [
+  { id: "detail", label: "Detalhe" },
+  { id: "browse", label: "Explorar" }
+];
+
 export default function SearchPanel({
   query,
   setQuery,
@@ -16,7 +21,9 @@ export default function SearchPanel({
   isMonochrome,
   onToggleDisplayMode,
   isSoundOn,
-  onToggleSound
+  onToggleSound,
+  view,
+  onChangeView
 }) {
   return (
     <motion.aside
@@ -77,6 +84,30 @@ export default function SearchPanel({
         >
           <Icon name={isSoundOn ? "volume" : "volumeOff"} size={22} strokeWidth={3} />
         </motion.button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Modo do visor">
+        {viewOptions.map(option => {
+          const isActive = option.id === view;
+
+          return (
+            <motion.button
+              key={option.id}
+              className={`min-h-12 rounded-lg border-2 px-3 font-pixel text-lg font-black uppercase leading-5 transition ${
+                isActive
+                  ? "border-white/40 bg-amber-300 text-dex-ink shadow-[inset_0_-4px_0_rgba(91,55,0,0.18)]"
+                  : "border-white/20 bg-slate-950/20 text-white/75 hover:bg-white/20"
+              }`}
+              type="button"
+              onClick={() => onChangeView(option.id)}
+              aria-pressed={isActive}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {option.label}
+            </motion.button>
+          );
+        })}
       </div>
 
       <SearchBox
