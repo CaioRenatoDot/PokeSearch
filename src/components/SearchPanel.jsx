@@ -22,9 +22,13 @@ export default function SearchPanel({
   onToggleDisplayMode,
   isSoundOn,
   onToggleSound,
+  volume,
+  onChangeVolume,
   view,
   onChangeView
 }) {
+  const volumePercent = Math.round(volume * 100);
+
   return (
     <motion.aside
       className="search-panel relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-5 lg:overflow-hidden lg:rounded-r-none lg:p-7"
@@ -84,6 +88,27 @@ export default function SearchPanel({
         >
           <Icon name={isSoundOn ? "volume" : "volumeOff"} size={22} strokeWidth={3} />
         </motion.button>
+      </div>
+
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-lg border-2 border-white/20 bg-slate-950/20 px-3 py-2">
+        <label className="font-pixel text-sm font-black uppercase leading-5 text-white/70" htmlFor="volumeRange">
+          Volume
+        </label>
+        <input
+          id="volumeRange"
+          className="h-2 w-full cursor-pointer accent-amber-300"
+          type="range"
+          min="0"
+          max="100"
+          step="5"
+          value={volumePercent}
+          onChange={event => onChangeVolume(Number(event.target.value) / 100)}
+          aria-label="Volume dos sons"
+          aria-valuetext={`${volumePercent} por cento`}
+        />
+        <span className="min-w-12 text-right font-pixel text-sm font-black uppercase leading-5 text-white/70">
+          {volumePercent}%
+        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2" role="group" aria-label="Modo do visor">

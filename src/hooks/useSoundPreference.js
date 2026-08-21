@@ -1,16 +1,28 @@
 import { useState } from "react";
-import { isSoundEnabled, setSoundEnabled } from "../utils/sounds.js";
+import { getVolume, isSoundEnabled, setSoundEnabled, setVolume } from "../utils/sounds.js";
 
 export function useSoundPreference() {
   const [isSoundOn, setIsSoundOn] = useState(() => isSoundEnabled());
+  const [volume, setVolumeState] = useState(() => getVolume());
 
   function toggleSound() {
-    setIsSoundOn(current => {
-      const next = !current;
-      setSoundEnabled(next);
-      return next;
-    });
+    const next = !isSoundOn;
+    setSoundEnabled(next);
+    setIsSoundOn(next);
   }
 
-  return { isSoundOn, toggleSound };
+  function changeVolume(nextVolume) {
+    setVolume(nextVolume);
+    setVolumeState(nextVolume);
+
+    // Arrastar até o zero silencia e sair do zero devolve o som, como num player.
+    const shouldBeOn = nextVolume > 0;
+
+    if (shouldBeOn !== isSoundOn) {
+      setSoundEnabled(shouldBeOn);
+      setIsSoundOn(shouldBeOn);
+    }
+  }
+
+  return { isSoundOn, toggleSound, volume, changeVolume };
 }

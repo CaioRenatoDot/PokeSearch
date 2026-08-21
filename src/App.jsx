@@ -13,7 +13,7 @@ const DEFAULT_TITLE = "PokeSearch | Pokedex";
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
   const [view, setView] = useState("detail");
-  const { isSoundOn, toggleSound } = useSoundPreference();
+  const { isSoundOn, toggleSound, volume, changeVolume } = useSoundPreference();
   const {
     query,
     setQuery,
@@ -77,6 +77,8 @@ export default function App() {
         onToggleDisplayMode={() => setIsMonochrome(current => !current)}
         isSoundOn={isSoundOn}
         onToggleSound={toggleSound}
+        volume={volume}
+        onChangeVolume={changeVolume}
         view={view}
         onChangeView={setView}
       />
