@@ -13,6 +13,7 @@ const DEFAULT_TITLE = "PokeSearch | Pokedex";
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
   const [view, setView] = useState("detail");
+  const [pinnedPokemon, setPinnedPokemon] = useState(null);
   const { isSoundOn, toggleSound, volume, changeVolume } = useSoundPreference();
   const {
     query,
@@ -89,6 +90,11 @@ export default function App() {
         view={view}
         browser={browser}
         onSelectFromGrid={handleSearch}
+        comparison={{
+          pinned: pinnedPokemon,
+          onPin: setPinnedPokemon,
+          onClear: () => setPinnedPokemon(null)
+        }}
         navigation={{
           onPrevious: handlePrevious,
           onNext: handleNext,

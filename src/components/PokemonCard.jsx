@@ -29,7 +29,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.28 } }
 };
 
-export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, hasNext }) {
+export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, hasNext, comparison }) {
   const [spriteMode, setSpriteMode] = useState("animated");
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
@@ -48,6 +48,21 @@ export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, 
       animate="show"
       exit="exit"
     >
+      {comparison.isPinned ? (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border-2 border-amber-600/45 bg-amber-200/70 px-3 py-2">
+          <p className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">
+            Fixado para comparação. Busque outro pokémon.
+          </p>
+          <button
+            className="rounded border-2 border-emerald-950/25 bg-white/70 px-3 py-1.5 font-pixel text-base font-black uppercase leading-5 text-dex-ink transition hover:bg-white"
+            type="button"
+            onClick={comparison.onClear}
+          >
+            Cancelar
+          </button>
+        </div>
+      ) : null}
+
       <motion.div
         className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)]"
         animate={{ scale: 1 }}
@@ -69,6 +84,17 @@ export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, 
           <motion.div className="flex items-center justify-between gap-3" variants={itemVariants}>
             <p className="font-display text-xs leading-6 text-emerald-950/70">{formatPokemonNumber(pokemon.id)}</p>
             <div className="flex items-center gap-2">
+              {comparison.isPinned ? null : (
+                <motion.button
+                  className="rounded border-2 border-emerald-950/25 bg-white/60 px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85"
+                  type="button"
+                  onClick={() => comparison.onPin(pokemon)}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                >
+                  Comparar
+                </motion.button>
+              )}
               <NavButton icon="chevronLeft" label="Pokémon anterior" onClick={onPrevious} disabled={!hasPrevious} />
               <NavButton icon="chevronRight" label="Próximo Pokémon" onClick={onNext} disabled={!hasNext} />
             </div>

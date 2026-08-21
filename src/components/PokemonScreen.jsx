@@ -4,9 +4,22 @@ import EmptyState from "./EmptyState.jsx";
 import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
 import PokemonGrid from "./PokemonGrid.jsx";
+import ComparisonView from "./ComparisonView.jsx";
 
-export default function PokemonScreen({ pokemon, status, message, navigation, view, browser, onSelectFromGrid }) {
+export default function PokemonScreen({
+  pokemon,
+  status,
+  message,
+  navigation,
+  view,
+  browser,
+  onSelectFromGrid,
+  comparison
+}) {
   const isBrowsing = view === "browse";
+  const pinned = comparison.pinned;
+  const isComparing =
+    !isBrowsing && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
 
   return (
     <motion.section
@@ -36,6 +49,13 @@ export default function PokemonScreen({ pokemon, status, message, navigation, vi
         <AnimatePresence mode="wait">
           {isBrowsing ? (
             <PokemonGrid key="grid" browser={browser} onSelect={onSelectFromGrid} />
+          ) : isComparing ? (
+            <ComparisonView
+              key={`compare-${pinned.id}-${pokemon.id}`}
+              pinned={pinned}
+              current={pokemon}
+              onClear={comparison.onClear}
+            />
           ) : status === "ready" && pokemon ? (
             <PokemonCard
               key={pokemon.id}
@@ -44,6 +64,11 @@ export default function PokemonScreen({ pokemon, status, message, navigation, vi
               onNext={navigation.onNext}
               hasPrevious={navigation.hasPrevious}
               hasNext={navigation.hasNext}
+              comparison={{
+                isPinned: Boolean(pinned),
+                onPin: comparison.onPin,
+                onClear: comparison.onClear
+              }}
             />
           ) : (
             <EmptyState key={status} status={status} message={message} />
@@ -52,7 +77,7 @@ export default function PokemonScreen({ pokemon, status, message, navigation, vi
       </div>
 
       <AnimatePresence>
-        {!isBrowsing && status === "ready" && pokemon ? (
+        {!isBrowsing && !isComparing && status === "ready" && pokemon ? (
           <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} />
         ) : null}
       </AnimatePresence>
