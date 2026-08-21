@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPokemon, getPokemonList } from "../api/pokeApi.js";
 import { normalizePokemonQuery } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
@@ -14,6 +14,8 @@ export function usePokemonSearch(fallbackQuery = "") {
   const [message, setMessage] = useState("");
   const [pokemonList, setPokemonList] = useState([]);
   const [history, setHistory] = useState([]);
+  // Cada busca recebe um numero; respostas de buscas antigas sao descartadas.
+  const requestIdRef = useRef(0);
 
   const normalizedQuery = normalizePokemonQuery(query);
   const filteredSuggestions = pokemonList
@@ -32,18 +34,26 @@ export function usePokemonSearch(fallbackQuery = "") {
       return;
     }
 
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
     setQuery(cleanQuery);
     setStatus("loading");
     setMessage("");
 
     try {
       const data = await getPokemon(cleanQuery);
+
+      if (requestId !== requestIdRef.current) return;
+
       setPokemon(data);
       setStatus("ready");
       setHistory(current => [data.name, ...current.filter(name => name !== data.name)].slice(0, 12));
       writePokemonToUrl(data.name);
       playPokemonCry(data.cries?.latest || data.cries?.legacy);
     } catch (error) {
+      if (requestId !== requestIdRef.current) return;
+
       setPokemon(null);
       setStatus("error");
       setMessage(error.message || "Não consegui consultar a PokeAPI agora.");
