@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
+import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
+import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
@@ -31,6 +33,10 @@ const itemVariants = {
 
 export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, hasNext, comparison }) {
   const [spriteMode, setSpriteMode] = useState("animated");
+  const species = usePokemonSpecies(pokemon);
+  const flavorText = getFlavorText(species);
+  const genus = getGenus(species);
+  const habitat = getHabitat(species);
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
     name: formatName(item.ability.name),
@@ -131,6 +137,17 @@ export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, 
         transition={{ delay: 0.35, duration: 0.36, ease: "easeOut" }}
       >
         <section className="grid content-start gap-4">
+          <InfoPanel title="Pokedex">
+            <p className="font-display text-base leading-6 text-dex-ink">
+              {flavorText || "Carregando a descrição..."}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <InfoRow label="Categoria" value={genus || "—"} />
+              <InfoRow label="Habitat" value={habitat ? formatName(habitat) : "—"} />
+              <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : "—"} />
+            </div>
+          </InfoPanel>
+
           <InfoPanel title="Dados de treino">
             <InfoRow label="Experiência" value={pokemon.base_experience ?? "N/A"} />
             <InfoRow label="Ordem" value={pokemon.order ?? "N/A"} />

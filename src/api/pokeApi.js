@@ -3,8 +3,30 @@ const LIST_STORAGE_KEY = "pokesearch:list";
 
 // Os dados da PokeAPI não mudam durante a sessão, então cada recurso é buscado uma vez só.
 const pokemonCache = new Map();
-const typeCache = new Map();
+const resourceCache = new Map();
 let pokemonListPromise;
+
+function getResource(url) {
+  if (!resourceCache.has(url)) {
+    const request = fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Não consegui carregar esse dado da PokeAPI.");
+        }
+
+        return response.json();
+      })
+      .catch(error => {
+        // Sem isso uma falha de rede ficaria em cache para sempre.
+        resourceCache.delete(url);
+        throw error;
+      });
+
+    resourceCache.set(url, request);
+  }
+
+  return resourceCache.get(url);
+}
 
 function extractIdFromUrl(url) {
   const match = /\/(\d+)\/?$/.exec(url);
@@ -85,25 +107,15 @@ export function getPokemonList() {
   return pokemonListPromise;
 }
 
-export function getPokemonNamesByType(type) {
-  const cached = typeCache.get(type);
+export function getType(type) {
+  return getResource(`${BASE_URL}/type/${encodeURIComponent(type)}`);
+}
 
-  if (cached) return cached;
+export async function getPokemonNamesByType(type) {
+  const data = await getType(type);
+  return data.pokemon.map(item => item.pokemon.name);
+}
 
-  const request = fetch(`${BASE_URL}/type/${encodeURIComponent(type)}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Não consegui carregar esse tipo.");
-      }
-
-      return response.json();
-    })
-    .then(data => data.pokemon.map(item => item.pokemon.name))
-    .catch(error => {
-      typeCache.delete(type);
-      throw error;
-    });
-
-  typeCache.set(type, request);
-  return request;
+export function getPokemonSpecies(speciesUrl) {
+  return getResource(speciesUrl);
 }
