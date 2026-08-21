@@ -3,6 +3,8 @@ import { motion } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
+import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
+import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
@@ -31,12 +33,21 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.28 } }
 };
 
-export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, hasNext, comparison }) {
+export default function PokemonCard({
+  pokemon,
+  onPrevious,
+  onNext,
+  hasPrevious,
+  hasNext,
+  comparison,
+  onSelectPokemon
+}) {
   const [spriteMode, setSpriteMode] = useState("animated");
   const species = usePokemonSpecies(pokemon);
   const flavorText = getFlavorText(species);
   const genus = getGenus(species);
   const habitat = getHabitat(species);
+  const evolutionStages = useEvolutionChain(species);
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
     name: formatName(item.ability.name),
@@ -192,6 +203,14 @@ export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, 
           </InfoPanel>
         </section>
       </motion.div>
+
+      {evolutionStages.length > 1 ? (
+        <div className="pb-4">
+          <InfoPanel title="Evolução">
+            <EvolutionChain stages={evolutionStages} currentId={pokemon.id} onSelect={onSelectPokemon} />
+          </InfoPanel>
+        </div>
+      ) : null}
     </motion.article>
   );
 }

@@ -90,6 +90,7 @@ export default function App() {
         view={view}
         browser={browser}
         onSelectFromGrid={handleSearch}
+        onSelectPokemon={handleSearch}
         comparison={{
           pinned: pinnedPokemon,
           onPin: setPinnedPokemon,

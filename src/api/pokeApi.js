@@ -119,3 +119,7 @@ export async function getPokemonNamesByType(type) {
 export function getPokemonSpecies(speciesUrl) {
   return getResource(speciesUrl);
 }
+
+export function getEvolutionChain(chainUrl) {
+  return getResource(chainUrl);
+}
