@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
+import { getLevelUpMoves } from "../utils/moves.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
 import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
@@ -56,7 +57,7 @@ export default function PokemonCard({
     hidden: item.is_hidden
   }));
   const primaryAbilities = abilities.slice(0, 2).map(item => item.name).join(", ");
-  const moves = pokemon.moves.slice(0, 10).map(item => formatName(item.move.name));
+  const moves = getLevelUpMoves(pokemon);
   const spriteCount = countSprites(pokemon.sprites);
 
   return (
@@ -214,17 +215,28 @@ export default function PokemonCard({
             )}
           </InfoPanel>
 
-          <InfoPanel title="Golpes iniciais">
-            <div className="flex flex-wrap gap-2">
-              {moves.map(move => (
-                <span
-                  key={move}
-                  className="rounded border-2 border-dex-dark bg-white/70 px-3 py-2 font-pixel text-base font-black text-dex-ink shadow-[inset_0_-2px_0_rgba(20,32,51,0.08)]"
-                >
-                  {move}
-                </span>
-              ))}
-            </div>
+          <InfoPanel title="Golpes por nível">
+            {moves.length ? (
+              <div className="grid gap-2">
+                {moves.map(move => (
+                  <div
+                    key={move.name}
+                    className="grid grid-cols-[auto_1fr] items-center gap-3 border-b-2 border-emerald-950/10 pb-2 last:border-b-0 last:pb-0"
+                  >
+                    <span className="grid h-8 min-w-16 place-items-center rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-2 font-pixel text-sm font-black uppercase leading-4 text-emerald-950/70">
+                      Nv {move.level}
+                    </span>
+                    <span className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">
+                      {formatName(move.name)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="font-display text-base leading-6 text-emerald-950/60">
+                Este pokémon não aprende golpes subindo de nível.
+              </p>
+            )}
           </InfoPanel>
         </section>
       </motion.div>
