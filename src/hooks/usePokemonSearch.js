@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPokemon, getPokemonList } from "../api/pokeApi.js";
 import { normalizePokemonQuery } from "../utils/search.js";
-import { playSearchSound } from "../utils/sounds.js";
+import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
 import { readPokemonFromUrl, writePokemonToUrl } from "../utils/url.js";
 
 export function usePokemonSearch(fallbackQuery = "") {
@@ -38,7 +38,7 @@ export function usePokemonSearch(fallbackQuery = "") {
       setStatus("ready");
       setHistory(current => [data.name, ...current.filter(name => name !== data.name)].slice(0, 12));
       writePokemonToUrl(data.name);
-      playSearchSound("success");
+      playPokemonCry(data.cries?.latest || data.cries?.legacy);
     } catch (error) {
       setPokemon(null);
       setStatus("error");

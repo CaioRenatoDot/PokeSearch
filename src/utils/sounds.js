@@ -1,4 +1,5 @@
 let audioContext;
+let currentCry;
 
 function getAudioContext() {
   audioContext ||= new AudioContext();
@@ -38,5 +39,26 @@ export function playSearchSound(kind) {
     tone(164, now + 0.11, 0.16, "sawtooth", 0.06);
   } catch {
     // Some browsers block audio until the first user gesture. The UI can keep going.
+  }
+}
+
+export function playPokemonCry(cryUrl) {
+  if (!cryUrl) {
+    playSearchSound("success");
+    return;
+  }
+
+  try {
+    currentCry?.pause();
+
+    const cry = new Audio(cryUrl);
+    cry.volume = 0.32;
+    currentCry = cry;
+
+    // Nem todo navegador toca .ogg e o autoplay pode ser bloqueado: o bipe cobre os dois casos.
+    cry.addEventListener("error", () => playSearchSound("success"), { once: true });
+    cry.play().catch(() => playSearchSound("success"));
+  } catch {
+    playSearchSound("success");
   }
 }
