@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatSearchLabel } from "../utils/search.js";
 
 const tabs = [
@@ -23,7 +23,7 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
           const isActive = tab.id === activeTab;
 
           return (
-            <motion.button
+            <m.button
               key={tab.id}
               className={`min-h-9 rounded border px-1.5 font-pixel text-xs font-black uppercase leading-4 transition sm:px-2 sm:text-sm ${
                 isActive
@@ -35,7 +35,7 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
               whileTap={{ scale: 0.98 }}
             >
               {tab.label}
-            </motion.button>
+            </m.button>
           );
         })}
       </div>
@@ -44,7 +44,7 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
         {items.length ? (
           <div className="grid grid-cols-2 gap-2">
             {items.map((name, index) => (
-              <motion.button
+              <m.button
                 key={name}
                 className="min-h-10 rounded-lg border border-white/20 bg-slate-950/20 px-2 font-pixel text-sm font-bold uppercase leading-5 transition hover:bg-white/20 sm:min-h-11 sm:px-3 sm:text-base"
                 type="button"
@@ -56,7 +56,7 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
                 whileTap={{ scale: 0.98 }}
               >
                 {formatSearchLabel(name)}
-              </motion.button>
+              </m.button>
             ))}
           </div>
         ) : (

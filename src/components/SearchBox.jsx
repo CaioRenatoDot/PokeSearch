@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatSearchLabel } from "../utils/search.js";
 import Icon from "./Icon.jsx";
 
@@ -72,7 +72,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
   }
 
   return (
-    <motion.form
+    <m.form
       className="relative grid gap-3 sm:grid-cols-[1fr_auto_auto] lg:grid-cols-1"
       onSubmit={handleSubmit}
       animate={status === "error" ? { x: [0, -8, 8, -4, 4, 0] } : { x: 0 }}
@@ -103,7 +103,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
           aria-describedby={`${listId}-hint`}
         />
         {isListOpen ? (
-          <motion.div
+          <m.div
             className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-lg border-2 border-white/30 bg-dex-dark/95 shadow-dex"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -132,11 +132,11 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </div>
 
-      <motion.button
+      <m.button
         className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 font-pixel text-xl font-black uppercase leading-5 text-slate-950 shadow-[inset_0_-4px_0_rgba(91,55,0,0.16)] transition hover:bg-amber-200"
         type="submit"
         whileHover={{ y: -2 }}
@@ -144,9 +144,9 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       >
         <Icon name="search" size={20} strokeWidth={3} />
         {status === "loading" ? "Buscando" : "Buscar"}
-      </motion.button>
+      </m.button>
 
-      <motion.button
+      <m.button
         className="inline-flex h-14 items-center justify-center gap-2 rounded-lg border-2 border-white/25 bg-slate-950/20 px-4 font-pixel text-xl font-black uppercase leading-5 text-white transition hover:bg-white/20"
         type="button"
         onClick={onRandom}
@@ -155,7 +155,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       >
         <Icon name="shuffle" size={20} strokeWidth={3} />
         Aleatório
-      </motion.button>
-    </motion.form>
+      </m.button>
+    </m.form>
   );
 }

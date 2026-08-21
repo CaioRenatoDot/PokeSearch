@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { statLabels } from "../data/pokemon.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import PokemonSprite from "./PokemonSprite.jsx";
@@ -19,7 +19,7 @@ export default function ComparisonView({ pinned, current, onClear }) {
   const currentTotal = totalStats(current);
 
   return (
-    <motion.div
+    <m.div
       className="w-full lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export default function ComparisonView({ pinned, current, onClear }) {
           label="Total"
         />
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -107,7 +107,7 @@ function StatSide({ value, share, isWinner, align }) {
     <div className={align === "right" ? "grid justify-items-end" : "grid justify-items-start"}>
       <strong className="font-pixel text-lg font-black leading-5 text-dex-ink">{value}</strong>
       <div className={`mt-1 h-3 w-full rounded border-2 border-dex-dark bg-[#142033] p-px ${align === "right" ? "flex justify-end" : ""}`}>
-        <motion.span
+        <m.span
           className={`block h-full rounded-[1px] ${isWinner ? "bg-[#58d36f]" : "bg-[#7cb7ff]"}`}
           initial={{ width: 0 }}
           animate={{ width: `${Math.max(4, share * 100)}%` }}

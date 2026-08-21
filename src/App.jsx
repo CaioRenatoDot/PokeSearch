@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
@@ -58,7 +58,7 @@ export default function App() {
   }, [pokemon]);
 
   return (
-    <motion.main
+    <m.main
       className={`app-shell grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:gap-0 lg:overflow-hidden lg:p-5 ${
         isMonochrome ? "theme-monochrome" : ""
       }`}
@@ -103,6 +103,6 @@ export default function App() {
           hasNext: hasNextPokemon
         }}
       />
-    </motion.main>
+    </m.main>
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { spriteModes } from "../utils/pokemonSprites.js";
 
 export default function SpriteModeControl({ value, onChange }) {
@@ -10,7 +10,7 @@ export default function SpriteModeControl({ value, onChange }) {
           const isActive = mode.id === value;
 
           return (
-            <motion.button
+            <m.button
               key={mode.id}
               className={`rounded border-2 px-2 py-2 font-pixel text-sm font-black uppercase leading-5 transition sm:px-3 sm:text-base ${
                 isActive
@@ -23,7 +23,7 @@ export default function SpriteModeControl({ value, onChange }) {
               whileTap={{ scale: 0.98 }}
             >
               {mode.label}
-            </motion.button>
+            </m.button>
           );
         })}
       </div>

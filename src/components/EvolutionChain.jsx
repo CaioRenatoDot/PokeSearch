@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatPokemonNumber } from "../utils/formatters.js";
 import { formatSearchLabel } from "../utils/search.js";
 import { getSpriteUrlById } from "../utils/pokemonSprites.js";
@@ -18,7 +18,7 @@ export default function EvolutionChain({ stages, currentId, onSelect }) {
 
           <div className="flex flex-wrap gap-2">
             {stage.map(item => (
-              <motion.button
+              <m.button
                 key={item.name}
                 className={`grid w-24 justify-items-center gap-1 rounded border-2 p-2 transition ${
                   item.id === currentId
@@ -44,7 +44,7 @@ export default function EvolutionChain({ stages, currentId, onSelect }) {
                 <span className="font-pixel text-sm font-black uppercase leading-4 text-dex-ink">
                   {formatSearchLabel(item.name)}
                 </span>
-              </motion.button>
+              </m.button>
             ))}
           </div>
         </div>

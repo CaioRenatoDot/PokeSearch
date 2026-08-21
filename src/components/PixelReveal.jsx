@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 
 const columns = 24;
 const rows = 15;
@@ -14,7 +14,7 @@ const pixels = Array.from({ length: columns * rows }, (_, index) => {
 
 export default function PixelReveal({ triggerKey }) {
   return (
-    <motion.div
+    <m.div
       key={triggerKey}
       className="pointer-events-none absolute inset-0 z-20 grid overflow-hidden bg-emerald-950/10"
       aria-hidden="true"
@@ -27,7 +27,7 @@ export default function PixelReveal({ triggerKey }) {
       transition={{ delay: 0.95, duration: 0.28, ease: "easeOut" }}
     >
       {pixels.map(pixel => (
-        <motion.span
+        <m.span
           key={pixel.id}
           className="block bg-[rgba(20,32,51,0.92)] shadow-[inset_0_0_0_1px_rgba(216,255,242,0.16)]"
           initial={{ opacity: 0, scale: 0.45 }}
@@ -43,6 +43,6 @@ export default function PixelReveal({ triggerKey }) {
           }}
         />
       ))}
-    </motion.div>
+    </m.div>
   );
 }

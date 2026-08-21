@@ -1,9 +1,9 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import Icon from "./Icon.jsx";
 
 export default function FactCard({ icon, label, value }) {
   return (
-    <motion.div
+    <m.div
       className="min-h-24 rounded-lg border border-emerald-950/15 bg-white/60 p-4"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -15,6 +15,6 @@ export default function FactCard({ icon, label, value }) {
         {label}
       </div>
       <strong className="block break-words text-2xl font-black leading-7 text-dex-ink">{value}</strong>
-    </motion.div>
+    </m.div>
   );
 }

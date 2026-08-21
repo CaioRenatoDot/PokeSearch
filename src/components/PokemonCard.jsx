@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
 import { getLevelUpMoves } from "../utils/moves.js";
@@ -61,7 +61,7 @@ export default function PokemonCard({
   const spriteCount = countSprites(pokemon.sprites);
 
   return (
-    <motion.article
+    <m.article
       className="w-full pr-0 lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
       variants={cardVariants}
       initial="hidden"
@@ -83,29 +83,29 @@ export default function PokemonCard({
         </div>
       ) : null}
 
-      <motion.div
+      <m.div
         className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)]"
         animate={{ scale: 1 }}
         transition={{ duration: 0.24, ease: "easeOut" }}
       >
-        <motion.div
+        <m.div
           className="grid place-items-center rounded-lg border border-emerald-950/15 bg-white/30 p-3"
           animate={{ minHeight: 280 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
           variants={itemVariants}
         >
           <PokemonSprite pokemon={pokemon} mode={spriteMode} />
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="flex min-h-0 flex-col justify-center rounded-lg bg-white/25 p-4 sm:p-6"
           variants={itemVariants}
         >
-          <motion.div className="flex items-center justify-between gap-3" variants={itemVariants}>
+          <m.div className="flex items-center justify-between gap-3" variants={itemVariants}>
             <p className="font-display text-xs leading-6 text-emerald-950/70">{formatPokemonNumber(pokemon.id)}</p>
             <div className="flex items-center gap-2">
               {comparison.isPinned ? null : (
-                <motion.button
+                <m.button
                   className="rounded border-2 border-emerald-950/25 bg-white/60 px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85"
                   type="button"
                   onClick={() => comparison.onPin(pokemon)}
@@ -113,38 +113,38 @@ export default function PokemonCard({
                   whileTap={{ scale: 0.96 }}
                 >
                   Comparar
-                </motion.button>
+                </m.button>
               )}
               <NavButton icon="chevronLeft" label="Pokémon anterior" onClick={onPrevious} disabled={!hasPrevious} />
               <NavButton icon="chevronRight" label="Próximo Pokémon" onClick={onNext} disabled={!hasNext} />
             </div>
-          </motion.div>
-          <motion.h2
+          </m.div>
+          <m.h2
             className="mt-2 font-display leading-tight capitalize text-dex-ink"
             animate={{ fontSize: "clamp(2rem, 11vw, 3rem)" }}
             transition={{ duration: 0.24 }}
             variants={itemVariants}
           >
             {formatName(pokemon.name)}
-          </motion.h2>
+          </m.h2>
 
-          <motion.div className="mt-5 flex flex-wrap gap-2" variants={itemVariants}>
+          <m.div className="mt-5 flex flex-wrap gap-2" variants={itemVariants}>
             {types.map(type => (
               <TypeBadge key={type} type={type} />
             ))}
-          </motion.div>
+          </m.div>
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
 
-          <motion.div className="mt-6 grid gap-3 sm:grid-cols-3" variants={itemVariants}>
+          <m.div className="mt-6 grid gap-3 sm:grid-cols-3" variants={itemVariants}>
             <FactCard icon="ruler" label="Altura" value={`${(pokemon.height / 10).toFixed(1)} m`} />
             <FactCard icon="weight" label="Peso" value={`${(pokemon.weight / 10).toFixed(1)} kg`} />
             <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </m.div>
+        </m.div>
+      </m.div>
 
-      <motion.div
+      <m.div
         className="grid gap-4 pb-4 pt-5 xl:grid-cols-[minmax(340px,0.85fr)_minmax(420px,1.15fr)]"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -239,7 +239,7 @@ export default function PokemonCard({
             )}
           </InfoPanel>
         </section>
-      </motion.div>
+      </m.div>
 
       {evolutionStages.length > 1 ? (
         <div className="pb-4">
@@ -248,13 +248,13 @@ export default function PokemonCard({
           </InfoPanel>
         </div>
       ) : null}
-    </motion.article>
+    </m.article>
   );
 }
 
 function NavButton({ icon, label, onClick, disabled }) {
   return (
-    <motion.button
+    <m.button
       className="grid h-10 w-10 place-items-center rounded border-2 border-emerald-950/25 bg-white/60 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-white/60"
       type="button"
       onClick={onClick}
@@ -265,22 +265,21 @@ function NavButton({ icon, label, onClick, disabled }) {
       whileTap={disabled ? undefined : { scale: 0.95 }}
     >
       <Icon name={icon} size={20} strokeWidth={3} />
-    </motion.button>
+    </m.button>
   );
 }
 
 function InfoPanel({ title, children }) {
   return (
-    <motion.div
+    <m.div
       className="rounded-lg border-2 border-emerald-950/20 bg-white/45 p-4 shadow-[inset_0_-4px_0_rgba(20,32,51,0.06)]"
       initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.22 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28 }}
     >
       <h3 className="mb-4 font-pixel text-xl font-black uppercase leading-6 text-dex-ink sm:text-2xl">{title}</h3>
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 

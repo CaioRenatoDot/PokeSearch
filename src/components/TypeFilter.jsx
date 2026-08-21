@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { typeStyles } from "../data/pokemon.js";
 import { formatName } from "../utils/formatters.js";
 
@@ -11,7 +11,7 @@ export default function TypeFilter({ activeType, onSelect }) {
         const isActive = type === activeType;
 
         return (
-          <motion.button
+          <m.button
             key={type}
             className={`rounded-lg px-3 py-1.5 font-pixel text-sm font-black uppercase leading-5 text-white transition ${
               typeStyles[type]
@@ -23,7 +23,7 @@ export default function TypeFilter({ activeType, onSelect }) {
             whileTap={{ scale: 0.96 }}
           >
             {formatName(type)}
-          </motion.button>
+          </m.button>
         );
       })}
     </div>

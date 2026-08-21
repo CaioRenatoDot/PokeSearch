@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatPokemonNumber } from "../utils/formatters.js";
 import { formatSearchLabel } from "../utils/search.js";
 import { getSpriteUrlById } from "../utils/pokemonSprites.js";
@@ -26,7 +26,7 @@ export default function PokemonGrid({ browser, onSelect }) {
   }, [hasMore, showMore, visibleList.length]);
 
   return (
-    <motion.div
+    <m.div
       className="w-full lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -75,6 +75,6 @@ export default function PokemonGrid({ browser, onSelect }) {
       )}
 
       {hasMore ? <div ref={sentinelRef} className="h-10" aria-hidden="true" /> : null}
-    </motion.div>
+    </m.div>
   );
 }

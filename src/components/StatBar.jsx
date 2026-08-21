@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { statLabels } from "../data/pokemon.js";
 import { formatName } from "../utils/formatters.js";
 
@@ -44,7 +44,7 @@ export default function StatBar({ stat }) {
   const activeSegments = Math.max(1, Math.min(totalSegments, Math.round((value / 160) * totalSegments)));
 
   return (
-    <motion.div
+    <m.div
       className="grid min-h-[84px] grid-cols-[1fr_auto] items-center gap-2 rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-3 py-2 shadow-[inset_0_-4px_0_rgba(20,32,51,0.08)] sm:min-h-[72px] sm:grid-cols-[124px_1fr_52px] sm:gap-3"
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
@@ -66,7 +66,7 @@ export default function StatBar({ stat }) {
             const isActive = index < activeSegments;
 
             return (
-              <motion.span
+              <m.span
                 key={index}
                 className={`block rounded-[1px] border border-white/10 ${
                   isActive ? `${theme.fill} ${theme.glow}` : "bg-[#243044]"
@@ -83,6 +83,6 @@ export default function StatBar({ stat }) {
       <strong className="rounded border-2 border-emerald-950/20 bg-white/65 px-2 py-1 text-right font-pixel text-xl font-black leading-5 text-dex-ink shadow-[inset_0_-2px_0_rgba(20,32,51,0.08)]">
         {value}
       </strong>
-    </motion.div>
+    </m.div>
   );
 }

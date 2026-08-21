@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import EmptyState from "./EmptyState.jsx";
 import PokemonCard from "./PokemonCard.jsx";
@@ -23,13 +23,13 @@ export default function PokemonScreen({
     !isBrowsing && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
 
   return (
-    <motion.section
+    <m.section
       className="pokemon-screen relative min-h-[70dvh] overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.08, duration: 0.48, ease: "easeOut" }}
     >
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1/3 bg-gradient-to-b from-transparent via-white/35 to-transparent"
         aria-hidden="true"
         animate={{ y: ["-120%", "320%"] }}
@@ -83,7 +83,7 @@ export default function PokemonScreen({
           <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} />
         ) : null}
       </AnimatePresence>
-    </motion.section>
+    </m.section>
   );
 }
 
