@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
+import { formatName, formatPokemonNumber } from "./utils/formatters.js";
+
+const DEFAULT_TITLE = "PokeSearch | Pokedex";
 
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
@@ -17,6 +20,12 @@ export default function App() {
     searchPokemon,
     searchRandomPokemon
   } = usePokemonSearch("pikachu");
+
+  useEffect(() => {
+    document.title = pokemon
+      ? `${formatName(pokemon.name)} ${formatPokemonNumber(pokemon.id)} | PokeSearch`
+      : DEFAULT_TITLE;
+  }, [pokemon]);
 
   return (
     <motion.main
