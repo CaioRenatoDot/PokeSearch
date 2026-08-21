@@ -88,6 +88,10 @@ export default function SearchPanel({
         onRandom={onRandom}
       />
 
+      <p className="hidden font-pixel text-sm font-bold uppercase leading-5 text-white/55 lg:block">
+        Atalhos: / buscar · ← → navegar · R aleatório
+      </p>
+
       <PanelTabs
         quickItems={quickSuggestions}
         suggestionItems={suggestions}

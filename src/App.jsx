@@ -4,6 +4,7 @@ import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
 import { useSoundPreference } from "./hooks/useSoundPreference.js";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
 
 const DEFAULT_TITLE = "PokeSearch | Pokedex";
@@ -26,6 +27,12 @@ export default function App() {
     hasPreviousPokemon,
     hasNextPokemon
   } = usePokemonSearch("pikachu");
+
+  useKeyboardShortcuts({
+    onPrevious: goToPreviousPokemon,
+    onNext: goToNextPokemon,
+    onRandom: searchRandomPokemon
+  });
 
   useEffect(() => {
     document.title = pokemon
