@@ -11,7 +11,10 @@ function isTypingTarget(target) {
 export function useKeyboardShortcuts(handlers) {
   // Guarda os callbacks numa ref para o listener global ser registrado uma vez só.
   const handlersRef = useRef(handlers);
-  handlersRef.current = handlers;
+
+  useEffect(() => {
+    handlersRef.current = handlers;
+  });
 
   useEffect(() => {
     function handleKeyDown(event) {

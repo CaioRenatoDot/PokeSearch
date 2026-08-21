@@ -5,29 +5,24 @@ const PAGE_SIZE = 60;
 
 export function usePokemonBrowser(pokemonList) {
   const [activeType, setActiveType] = useState(null);
-  const [typeMembers, setTypeMembers] = useState(null);
-  const [isLoadingType, setIsLoadingType] = useState(false);
+  // Os membros carregam o tipo a que pertencem, para o filtro nunca usar a lista de outro tipo.
+  const [loadedMembers, setLoadedMembers] = useState({ type: null, names: null });
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  const typeMembers = loadedMembers.type === activeType ? loadedMembers.names : null;
+  const isLoadingType = Boolean(activeType) && typeMembers === null;
+
   useEffect(() => {
-    if (!activeType) {
-      setTypeMembers(null);
-      setIsLoadingType(false);
-      return;
-    }
+    if (!activeType) return;
 
     let isCurrent = true;
-    setIsLoadingType(true);
 
     getPokemonNamesByType(activeType)
       .then(names => {
-        if (isCurrent) setTypeMembers(new Set(names));
+        if (isCurrent) setLoadedMembers({ type: activeType, names: new Set(names) });
       })
       .catch(() => {
-        if (isCurrent) setTypeMembers(new Set());
-      })
-      .finally(() => {
-        if (isCurrent) setIsLoadingType(false);
+        if (isCurrent) setLoadedMembers({ type: activeType, names: new Set() });
       });
 
     return () => {

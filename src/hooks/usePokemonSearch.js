@@ -90,8 +90,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     const startupQuery = readPokemonFromUrl() || fallbackQuery;
 
     if (startupQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial: o pedido tem que sair na montagem
       searchPokemon(startupQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- roda só na montagem, com o valor inicial
   }, []);
 
   return {

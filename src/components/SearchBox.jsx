@@ -6,16 +6,18 @@ import Icon from "./Icon.jsx";
 export default function SearchBox({ query, setQuery, status, suggestions = [], onSearch, onRandom }) {
   const listId = useId();
   const listRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  // A opção destacada guarda a lista a que pertence, então trocar de sugestões já zera o destaque.
+  const [highlight, setHighlight] = useState({ key: "", index: -1 });
   const [isListDismissed, setIsListDismissed] = useState(false);
 
+  const suggestionsKey = suggestions.join("|");
+  const activeIndex = highlight.key === suggestionsKey ? highlight.index : -1;
   const isListOpen = suggestions.length > 0 && !isListDismissed;
   const activeOptionId = isListOpen && activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined;
-  const suggestionsKey = suggestions.join("|");
 
-  useEffect(() => {
-    setActiveIndex(-1);
-  }, [suggestionsKey]);
+  function setActiveIndex(index) {
+    setHighlight({ key: suggestionsKey, index });
+  }
 
   useEffect(() => {
     if (activeIndex < 0 || !listRef.current) return;
@@ -50,13 +52,13 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex(current => (current + 1) % suggestions.length);
+      setActiveIndex((activeIndex + 1) % suggestions.length);
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex(current => (current <= 0 ? suggestions.length - 1 : current - 1));
+      setActiveIndex(activeIndex <= 0 ? suggestions.length - 1 : activeIndex - 1);
       return;
     }
 

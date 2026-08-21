@@ -2,24 +2,21 @@ import { useEffect, useState } from "react";
 import { getPokemonSpecies } from "../api/pokeApi.js";
 
 export function usePokemonSpecies(pokemon) {
-  const [species, setSpecies] = useState(null);
+  // O estado guarda a que URL ele pertence, para nunca devolver a espécie do pokémon anterior.
+  const [loaded, setLoaded] = useState({ url: null, data: null });
   const speciesUrl = pokemon?.species?.url;
 
   useEffect(() => {
-    if (!speciesUrl) {
-      setSpecies(null);
-      return;
-    }
+    if (!speciesUrl) return;
 
     let isCurrent = true;
-    setSpecies(null);
 
     getPokemonSpecies(speciesUrl)
       .then(data => {
-        if (isCurrent) setSpecies(data);
+        if (isCurrent) setLoaded({ url: speciesUrl, data });
       })
       .catch(() => {
-        if (isCurrent) setSpecies(null);
+        if (isCurrent) setLoaded({ url: speciesUrl, data: null });
       });
 
     return () => {
@@ -27,5 +24,5 @@ export function usePokemonSpecies(pokemon) {
     };
   }, [speciesUrl]);
 
-  return species;
+  return loaded.url === speciesUrl ? loaded.data : null;
 }

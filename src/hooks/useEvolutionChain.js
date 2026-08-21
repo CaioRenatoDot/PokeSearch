@@ -2,24 +2,23 @@ import { useEffect, useState } from "react";
 import { getEvolutionChain } from "../api/pokeApi.js";
 import { buildEvolutionStages } from "../utils/evolution.js";
 
+const EMPTY_STAGES = [];
+
 export function useEvolutionChain(species) {
-  const [stages, setStages] = useState([]);
+  const [loaded, setLoaded] = useState({ url: null, stages: EMPTY_STAGES });
   const chainUrl = species?.evolution_chain?.url;
 
   useEffect(() => {
-    if (!chainUrl) {
-      setStages([]);
-      return;
-    }
+    if (!chainUrl) return;
 
     let isCurrent = true;
 
     getEvolutionChain(chainUrl)
       .then(data => {
-        if (isCurrent) setStages(buildEvolutionStages(data.chain));
+        if (isCurrent) setLoaded({ url: chainUrl, stages: buildEvolutionStages(data.chain) });
       })
       .catch(() => {
-        if (isCurrent) setStages([]);
+        if (isCurrent) setLoaded({ url: chainUrl, stages: EMPTY_STAGES });
       });
 
     return () => {
@@ -27,5 +26,5 @@ export function useEvolutionChain(species) {
     };
   }, [chainUrl]);
 
-  return stages;
+  return loaded.url === chainUrl ? loaded.stages : EMPTY_STAGES;
 }
