@@ -4,6 +4,9 @@ import { normalizePokemonQuery } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
 import { readPokemonFromUrl, writePokemonToUrl } from "../utils/url.js";
 
+// Ultimo numero da Pokedex nacional; formas alternativas usam ids acima de 10000.
+const MAX_POKEDEX_ID = 1025;
+
 export function usePokemonSearch(fallbackQuery = "") {
   const [query, setQuery] = useState(() => readPokemonFromUrl() || fallbackQuery);
   const [pokemon, setPokemon] = useState(null);
@@ -47,6 +50,17 @@ export function usePokemonSearch(fallbackQuery = "") {
     }
   }
 
+  const previousId = pokemon && pokemon.id > 1 && pokemon.id <= MAX_POKEDEX_ID ? pokemon.id - 1 : null;
+  const nextId = pokemon && pokemon.id < MAX_POKEDEX_ID ? pokemon.id + 1 : null;
+
+  function goToPreviousPokemon() {
+    if (previousId) searchPokemon(String(previousId));
+  }
+
+  function goToNextPokemon() {
+    if (nextId) searchPokemon(String(nextId));
+  }
+
   function searchRandomPokemon() {
     if (pokemonList.length) {
       const randomName = pokemonList[Math.floor(Math.random() * pokemonList.length)];
@@ -54,7 +68,7 @@ export function usePokemonSearch(fallbackQuery = "") {
       return;
     }
 
-    searchPokemon(String(Math.floor(Math.random() * 1025) + 1));
+    searchPokemon(String(Math.floor(Math.random() * MAX_POKEDEX_ID) + 1));
   }
 
   useEffect(() => {
@@ -78,6 +92,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     filteredSuggestions,
     history,
     searchPokemon,
-    searchRandomPokemon
+    searchRandomPokemon,
+    goToPreviousPokemon,
+    goToNextPokemon,
+    hasPreviousPokemon: previousId !== null,
+    hasNextPokemon: nextId !== null
   };
 }

@@ -1,5 +1,7 @@
 const iconPaths = {
   activity: "M4 12h4l2-7 4 14 2-7h4",
+  chevronLeft: "m15 6-6 6 6 6",
+  chevronRight: "m9 6 6 6-6 6",
   gauge: "M5 17a8 8 0 1 1 14 0M12 14l4-4",
   ruler: "M4 16 16 4l4 4L8 20l-4-4Zm4-4 2 2m2-6 2 2",
   search: "m21 21-5-5m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z",

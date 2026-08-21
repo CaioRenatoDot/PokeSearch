@@ -4,7 +4,7 @@ import EmptyState from "./EmptyState.jsx";
 import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
 
-export default function PokemonScreen({ pokemon, status, message }) {
+export default function PokemonScreen({ pokemon, status, message, navigation }) {
   return (
     <motion.section
       className="pokemon-screen relative min-h-[70dvh] overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
@@ -32,7 +32,14 @@ export default function PokemonScreen({ pokemon, status, message }) {
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
           {status === "ready" && pokemon ? (
-            <PokemonCard key={pokemon.id} pokemon={pokemon} />
+            <PokemonCard
+              key={pokemon.id}
+              pokemon={pokemon}
+              onPrevious={navigation.onPrevious}
+              onNext={navigation.onNext}
+              hasPrevious={navigation.hasPrevious}
+              hasNext={navigation.hasNext}
+            />
           ) : (
             <EmptyState key={status} status={status} message={message} />
           )}

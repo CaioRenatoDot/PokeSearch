@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import FactCard from "./FactCard.jsx";
+import Icon from "./Icon.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
 import SpriteModeControl from "./SpriteModeControl.jsx";
 import StatBar from "./StatBar.jsx";
@@ -28,7 +29,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.28 } }
 };
 
-export default function PokemonCard({ pokemon }) {
+export default function PokemonCard({ pokemon, onPrevious, onNext, hasPrevious, hasNext }) {
   const [spriteMode, setSpriteMode] = useState("animated");
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
@@ -65,9 +66,13 @@ export default function PokemonCard({ pokemon }) {
           className="flex min-h-0 flex-col justify-center rounded-lg bg-white/25 p-4 sm:p-6"
           variants={itemVariants}
         >
-          <motion.p className="font-display text-xs leading-6 text-emerald-950/70" variants={itemVariants}>
-            {formatPokemonNumber(pokemon.id)}
-          </motion.p>
+          <motion.div className="flex items-center justify-between gap-3" variants={itemVariants}>
+            <p className="font-display text-xs leading-6 text-emerald-950/70">{formatPokemonNumber(pokemon.id)}</p>
+            <div className="flex items-center gap-2">
+              <NavButton icon="chevronLeft" label="Pokémon anterior" onClick={onPrevious} disabled={!hasPrevious} />
+              <NavButton icon="chevronRight" label="Próximo Pokémon" onClick={onNext} disabled={!hasNext} />
+            </div>
+          </motion.div>
           <motion.h2
             className="mt-2 font-display leading-tight capitalize text-dex-ink"
             animate={{ fontSize: "clamp(2rem, 11vw, 3rem)" }}
@@ -145,6 +150,23 @@ export default function PokemonCard({ pokemon }) {
         </section>
       </motion.div>
     </motion.article>
+  );
+}
+
+function NavButton({ icon, label, onClick, disabled }) {
+  return (
+    <motion.button
+      className="grid h-10 w-10 place-items-center rounded border-2 border-emerald-950/25 bg-white/60 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-white/60"
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      whileHover={disabled ? undefined : { y: -2 }}
+      whileTap={disabled ? undefined : { scale: 0.95 }}
+    >
+      <Icon name={icon} size={20} strokeWidth={3} />
+    </motion.button>
   );
 }
 

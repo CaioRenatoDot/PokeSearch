@@ -20,7 +20,11 @@ export default function App() {
     filteredSuggestions,
     history,
     searchPokemon,
-    searchRandomPokemon
+    searchRandomPokemon,
+    goToPreviousPokemon,
+    goToNextPokemon,
+    hasPreviousPokemon,
+    hasNextPokemon
   } = usePokemonSearch("pikachu");
 
   useEffect(() => {
@@ -51,7 +55,17 @@ export default function App() {
         isSoundOn={isSoundOn}
         onToggleSound={toggleSound}
       />
-      <PokemonScreen pokemon={pokemon} status={status} message={message} />
+      <PokemonScreen
+        pokemon={pokemon}
+        status={status}
+        message={message}
+        navigation={{
+          onPrevious: goToPreviousPokemon,
+          onNext: goToNextPokemon,
+          hasPrevious: hasPreviousPokemon,
+          hasNext: hasNextPokemon
+        }}
+      />
     </motion.main>
   );
 }
