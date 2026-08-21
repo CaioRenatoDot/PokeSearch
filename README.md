@@ -15,9 +15,19 @@ Depois abra a URL que o Vite mostrar no terminal, normalmente:
 http://localhost:5173/
 ```
 
+## Scripts
+
+```bash
+npm run dev     # ambiente de desenvolvimento
+npm run lint    # ESLint
+npm test        # testes das funções puras (Vitest)
+npm run build   # build de produção
+```
+
 ## Recursos
 
 - **Busca na PokeAPI** por nome ou número, com sugestões navegáveis por teclado.
+- **Ficha completa**: descrição da Pokedex, categoria, habitat, cadeia evolutiva clicável, fraquezas por tipo e golpes por nível.
 - **Modo explorar**: grade com todos os Pokémon, filtro pelos 18 tipos e carregamento por scroll.
 - **Comparação** de dois Pokémon lado a lado, com a diferença de cada atributo base.
 - **Grito oficial** de cada Pokémon, com controle de volume e botão de mudo salvos no navegador.
@@ -56,3 +66,6 @@ Ao abrir um link assim, o app já carrega o Pokémon do parâmetro em vez do pad
 - `src/hooks/useKeyboardShortcuts.js`: atalhos globais.
 - `src/api/pokeApi.js`: chamadas HTTP para a PokeAPI.
 - `src/utils/url.js`: leitura e escrita do Pokémon atual na URL.
+- `src/utils/typeEffectiveness.js`: multiplicadores de dano a partir dos tipos.
+- `src/utils/evolution.js`: achatamento da cadeia evolutiva em estágios.
+- `src/utils/moves.js`: golpes aprendidos por nível.
