@@ -17,6 +17,7 @@ import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
 import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
 import ActionButton from "./ActionButton.jsx";
+import CopyLinkButton from "./CopyLinkButton.jsx";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
@@ -161,6 +162,7 @@ export default function PokemonCard({
                 Comparar
               </ActionButton>
             )}
+            <CopyLinkButton />
           </m.div>
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
