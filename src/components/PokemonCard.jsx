@@ -13,7 +13,6 @@ import {
   getSpeciesId,
   getVarieties
 } from "../utils/pokemonSpecies.js";
-import { getLevelUpMoves } from "../utils/moves.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
 import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
@@ -21,6 +20,7 @@ import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
 import { InfoPanel, InfoRow } from "./InfoPanel.jsx";
+import MovesPanel from "./MovesPanel.jsx";
 import PokemonForms from "./PokemonForms.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
 import SpriteModeControl from "./SpriteModeControl.jsx";
@@ -71,7 +71,6 @@ export default function PokemonCard({
     hidden: item.is_hidden
   }));
   const primaryAbilities = abilities.slice(0, 2).map(item => item.name).join(", ");
-  const moves = getLevelUpMoves(pokemon);
   const statTotal = pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
   const rarity = getRarityLabel(species);
   const speciesFallback = isSpeciesLoading ? "Carregando..." : "—";
@@ -245,29 +244,7 @@ export default function PokemonCard({
             )}
           </InfoPanel>
 
-          <InfoPanel title="Golpes por nível">
-            {moves.length ? (
-              <div className="grid gap-2">
-                {moves.map(move => (
-                  <div
-                    key={move.name}
-                    className="grid grid-cols-[auto_1fr] items-center gap-3 border-b-2 border-emerald-950/10 pb-2 last:border-b-0 last:pb-0"
-                  >
-                    <span className="grid h-8 min-w-16 place-items-center rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-2 font-pixel text-sm font-black uppercase leading-4 text-emerald-950/70">
-                      Nv {move.level}
-                    </span>
-                    <span className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">
-                      {formatName(move.name)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="font-display text-base leading-6 text-emerald-950/60">
-                Este pokémon não aprende golpes subindo de nível.
-              </p>
-            )}
-          </InfoPanel>
+          <MovesPanel pokemon={pokemon} />
         </section>
       </m.div>
 

@@ -159,3 +159,7 @@ export function getPokemonSpecies(speciesUrl) {
 export function getEvolutionChain(chainUrl) {
   return getResource(chainUrl);
 }
+
+export function getMove(moveName) {
+  return getResource(`${BASE_URL}/move/${encodeURIComponent(moveName)}`);
+}

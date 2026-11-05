@@ -64,3 +64,9 @@ export const habitatLabels = {
   urban: "Urbano",
   "waters-edge": "Beira d'água"
 };
+
+export const damageClassLabels = {
+  physical: "Físico",
+  special: "Especial",
+  status: "Status"
+};
