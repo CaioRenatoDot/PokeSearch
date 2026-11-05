@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { m } from "motion/react";
+import { getPokemon } from "./api/pokeApi.js";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
@@ -7,33 +8,18 @@ import { useSoundPreference } from "./hooks/useSoundPreference.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
 import { usePokemonBrowser } from "./hooks/usePokemonBrowser.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
+import { readUrlState, updateUrl } from "./utils/url.js";
 
 const DEFAULT_TITLE = "PokeSearch | Pokedex";
+const FALLBACK_POKEMON = "pikachu";
 
 export default function App() {
   const [isMonochrome, setIsMonochrome] = useState(false);
-  const [view, setView] = useState("detail");
+  const [view, setView] = useState(() => readUrlState().view);
   const [pinnedPokemon, setPinnedPokemon] = useState(null);
   const { isSoundOn, toggleSound, volume, changeVolume } = useSoundPreference();
-  const {
-    query,
-    setQuery,
-    pokemon,
-    status,
-    message,
-    failure,
-    didYouMean,
-    filteredSuggestions,
-    pokemonList,
-    history,
-    searchPokemon,
-    searchRandomPokemon,
-    retrySearch,
-    goToPreviousPokemon,
-    goToNextPokemon,
-    hasPreviousPokemon,
-    hasNextPokemon
-  } = usePokemonSearch("pikachu");
+  const search = usePokemonSearch(FALLBACK_POKEMON);
+  const { pokemon, status, message, pokemonList } = search;
   const browser = usePokemonBrowser(pokemonList);
 
   function showDetail(action) {
@@ -43,17 +29,78 @@ export default function App() {
     };
   }
 
-  const handleSearch = showDetail(searchPokemon);
-  const handleRandom = showDetail(searchRandomPokemon);
-  const handlePrevious = showDetail(goToPreviousPokemon);
-  const handleNext = showDetail(goToNextPokemon);
-  const handleRetry = showDetail(retrySearch);
+  const handleSearch = showDetail(search.searchPokemon);
+  const handleRandom = showDetail(search.searchRandomPokemon);
+  const handlePrevious = showDetail(search.goToPreviousPokemon);
+  const handleNext = showDetail(search.goToNextPokemon);
+  const handleRetry = showDetail(search.retrySearch);
+
+  function handleChangeView(nextView) {
+    if (nextView === view) return;
+
+    setView(nextView);
+    updateUrl({ view: nextView === "detail" ? null : nextView }, { history: "push" });
+  }
+
+  function handlePin(target) {
+    setPinnedPokemon(target);
+    updateUrl({ versus: target.name });
+  }
+
+  function handleClearPin() {
+    setPinnedPokemon(null);
+    updateUrl({ versus: null });
+  }
 
   useKeyboardShortcuts({
     onPrevious: handlePrevious,
     onNext: handleNext,
     onRandom: handleRandom
   });
+
+  // Reaplica o endereço quando o usuário usa voltar e avançar do navegador.
+  const restoreFromUrlRef = useRef(null);
+
+  useEffect(() => {
+    restoreFromUrlRef.current = () => {
+      const state = readUrlState();
+      const targetName = state.pokemon || FALLBACK_POKEMON;
+
+      setView(state.view);
+
+      if (targetName !== pokemon?.name) {
+        search.searchPokemon(targetName, { history: "none" });
+      }
+
+      if (!state.versus) {
+        setPinnedPokemon(null);
+      } else if (state.versus !== pinnedPokemon?.name) {
+        getPokemon(state.versus)
+          .then(setPinnedPokemon)
+          .catch(() => setPinnedPokemon(null));
+      }
+    };
+  });
+
+  useEffect(() => {
+    function handlePopState() {
+      restoreFromUrlRef.current();
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Um link de comparação já abre com o outro Pokémon fixado.
+  useEffect(() => {
+    const { versus } = readUrlState();
+
+    if (!versus) return;
+
+    getPokemon(versus)
+      .then(setPinnedPokemon)
+      .catch(() => updateUrl({ versus: null }));
+  }, []);
 
   useEffect(() => {
     document.title = pokemon
@@ -71,11 +118,11 @@ export default function App() {
       transition={{ duration: 0.55, ease: "easeOut" }}
     >
       <SearchPanel
-        query={query}
-        setQuery={setQuery}
+        query={search.query}
+        setQuery={search.setQuery}
         status={status}
-        suggestions={filteredSuggestions}
-        history={history}
+        suggestions={search.filteredSuggestions}
+        history={search.history}
         onSearch={handleSearch}
         onRandom={handleRandom}
         isMonochrome={isMonochrome}
@@ -85,14 +132,14 @@ export default function App() {
         volume={volume}
         onChangeVolume={changeVolume}
         view={view}
-        onChangeView={setView}
+        onChangeView={handleChangeView}
       />
       <PokemonScreen
         pokemon={pokemon}
         status={status}
         message={message}
-        failure={failure}
-        didYouMean={didYouMean}
+        failure={search.failure}
+        didYouMean={search.didYouMean}
         onRetry={handleRetry}
         view={view}
         browser={browser}
@@ -100,14 +147,14 @@ export default function App() {
         onSelectPokemon={handleSearch}
         comparison={{
           pinned: pinnedPokemon,
-          onPin: setPinnedPokemon,
-          onClear: () => setPinnedPokemon(null)
+          onPin: handlePin,
+          onClear: handleClearPin
         }}
         navigation={{
           onPrevious: handlePrevious,
           onNext: handleNext,
-          hasPrevious: hasPreviousPokemon,
-          hasNext: hasNextPokemon
+          hasPrevious: search.hasPreviousPokemon,
+          hasNext: search.hasNextPokemon
         }}
       />
     </m.main>
