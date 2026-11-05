@@ -1,7 +1,7 @@
 export function normalizePokemonQuery(value) {
   const normalized = String(value)
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .trim()
     .replace(/['.]/g, "")
@@ -27,4 +27,24 @@ export function formatSearchLabel(value) {
     .split("-")
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+// Quanto menor a nota, melhor a sugestão: quem começa com o termo vem antes de quem só o contém.
+function matchScore(entry, query) {
+  if (String(entry.id) === query) return 0;
+  if (entry.name.startsWith(query)) return 1;
+  if (entry.name.includes(`-${query}`)) return 2;
+  if (entry.name.includes(query)) return 3;
+  return null;
+}
+
+export function rankSuggestions(list, query, limit = 6) {
+  if (!query) return [];
+
+  return list
+    .map(entry => ({ entry, score: entry.name === query ? null : matchScore(entry, query) }))
+    .filter(item => item.score !== null)
+    .sort((a, b) => a.score - b.score || a.entry.id - b.entry.id)
+    .slice(0, limit)
+    .map(item => item.entry.name);
 }

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPokemon, getPokemonList } from "../api/pokeApi.js";
-import { normalizePokemonQuery } from "../utils/search.js";
+import { normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
 import { readPokemonFromUrl, writePokemonToUrl } from "../utils/url.js";
 
@@ -18,10 +18,10 @@ export function usePokemonSearch(fallbackQuery = "") {
   const requestIdRef = useRef(0);
 
   const normalizedQuery = normalizePokemonQuery(query);
-  const filteredSuggestions = pokemonList
-    .filter(({ name }) => normalizedQuery && name.includes(normalizedQuery) && name !== normalizedQuery)
-    .slice(0, 6)
-    .map(({ name }) => name);
+  const filteredSuggestions = useMemo(
+    () => rankSuggestions(pokemonList, normalizedQuery),
+    [pokemonList, normalizedQuery]
+  );
 
   async function searchPokemon(nextQuery) {
     const cleanQuery = normalizePokemonQuery(nextQuery);
