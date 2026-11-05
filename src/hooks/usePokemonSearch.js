@@ -3,7 +3,9 @@ import { PokemonNotFoundError, getPokemon, getPokemonList } from "../api/pokeApi
 import { getSpeciesId } from "../utils/pokemonSpecies.js";
 import { findClosestNames, normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
+import { toNameList } from "../utils/storage.js";
 import { readUrlState, updateUrl } from "../utils/url.js";
+import { useStoredState } from "./useStoredState.js";
 
 // Ultimo numero da Pokedex nacional; formas alternativas usam ids acima de 10000.
 const MAX_POKEDEX_ID = 1025;
@@ -17,7 +19,7 @@ export function usePokemonSearch(fallbackQuery = "") {
   // Guarda o tipo de falha e o termo: a tela oferece sugestões ou "tentar de novo" conforme o caso.
   const [failure, setFailure] = useState(null);
   const [pokemonList, setPokemonList] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useStoredState("pokesearch:history", [], toNameList);
   // Cada busca recebe um numero; respostas de buscas antigas sao descartadas.
   const requestIdRef = useRef(0);
 
@@ -114,6 +116,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     if (failure?.query) searchPokemon(failure.query);
   }
 
+  function clearHistory() {
+    setHistory([]);
+  }
+
   useEffect(() => {
     getPokemonList()
       .then(setPokemonList)
@@ -139,6 +145,7 @@ export function usePokemonSearch(fallbackQuery = "") {
     filteredSuggestions,
     pokemonList,
     history,
+    clearHistory,
     searchPokemon,
     searchRandomPokemon,
     retrySearch,

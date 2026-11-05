@@ -16,6 +16,7 @@ import {
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
 import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
+import ActionButton from "./ActionButton.jsx";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
@@ -55,6 +56,7 @@ export default function PokemonCard({
   hasPrevious,
   hasNext,
   comparison,
+  favorites,
   onSelectPokemon
 }) {
   const [spriteMode, setSpriteMode] = useState("animated");
@@ -73,6 +75,7 @@ export default function PokemonCard({
   const primaryAbilities = abilities.slice(0, 2).map(item => item.name).join(", ");
   const statTotal = pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
   const rarity = getRarityLabel(species);
+  const isFavorite = favorites.isFavorite(pokemon.name);
   const speciesFallback = isSpeciesLoading ? "Carregando..." : "—";
 
   return (
@@ -119,17 +122,6 @@ export default function PokemonCard({
           <m.div className="flex items-center justify-between gap-3" variants={itemVariants}>
             <p className="font-display text-xs leading-6 text-emerald-950/70">{formatPokemonNumber(pokemon.id)}</p>
             <div className="flex items-center gap-2">
-              {comparison.isPinned ? null : (
-                <m.button
-                  className="rounded border-2 border-emerald-950/25 bg-white/60 px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85"
-                  type="button"
-                  onClick={() => comparison.onPin(pokemon)}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  Comparar
-                </m.button>
-              )}
               <NavButton icon="chevronLeft" label="Pokémon anterior" onClick={onPrevious} disabled={!hasPrevious} />
               <NavButton icon="chevronRight" label="Próximo Pokémon" onClick={onNext} disabled={!hasNext} />
             </div>
@@ -152,6 +144,23 @@ export default function PokemonCard({
                 {rarity}
               </span>
             ) : null}
+          </m.div>
+
+          <m.div className="mt-4 flex flex-wrap gap-2" variants={itemVariants}>
+            <ActionButton
+              icon="star"
+              iconFilled={isFavorite}
+              isActive={isFavorite}
+              aria-pressed={isFavorite}
+              onClick={() => favorites.toggle(pokemon.name)}
+            >
+              {isFavorite ? "Favorito" : "Favoritar"}
+            </ActionButton>
+            {comparison.isPinned ? null : (
+              <ActionButton icon="compare" onClick={() => comparison.onPin(pokemon)}>
+                Comparar
+              </ActionButton>
+            )}
           </m.div>
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />

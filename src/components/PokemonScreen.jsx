@@ -22,6 +22,7 @@ export default function PokemonScreen({
   browser,
   onSelectFromGrid,
   comparison,
+  favorites,
   onSelectPokemon
 }) {
   const isBrowsing = view === "browse";
@@ -92,6 +93,7 @@ export default function PokemonScreen({
               hasPrevious={navigation.hasPrevious}
               hasNext={navigation.hasNext}
               onSelectPokemon={onSelectPokemon}
+              favorites={favorites}
               comparison={{
                 isPinned: Boolean(pinned),
                 onPin: comparison.onPin,

@@ -16,6 +16,8 @@ export default function SearchPanel({
   status,
   suggestions,
   history,
+  onClearHistory,
+  favorites,
   onSearch,
   onRandom,
   isMonochrome,
@@ -145,14 +147,16 @@ export default function SearchPanel({
       />
 
       <p className="hidden font-pixel text-xs font-bold uppercase leading-4 text-white/55 lg:block">
-        Atalhos: / buscar · ← → navegar · R aleatório
+        / buscar · ← → navegar · R sortear · F favoritar
       </p>
 
       <PanelTabs
         quickItems={quickSuggestions}
         suggestionItems={suggestions}
+        favoriteItems={favorites}
         historyItems={history}
         onSelect={onSearch}
+        onClearHistory={onClearHistory}
       />
 
       <PokeballMark className="pointer-events-none absolute bottom-6 right-6 -z-10 hidden opacity-10 lg:block" />

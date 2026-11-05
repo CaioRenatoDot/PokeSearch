@@ -3,10 +3,12 @@ import { m } from "motion/react";
 import { getPokemon } from "./api/pokeApi.js";
 import SearchPanel from "./components/SearchPanel.jsx";
 import PokemonScreen from "./components/PokemonScreen.jsx";
+import { useFavorites } from "./hooks/useFavorites.js";
 import { usePokemonSearch } from "./hooks/usePokemonSearch.js";
 import { useSoundPreference } from "./hooks/useSoundPreference.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
 import { usePokemonBrowser } from "./hooks/usePokemonBrowser.js";
+import { useStoredState } from "./hooks/useStoredState.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
 import { readUrlState, updateUrl } from "./utils/url.js";
 
@@ -14,12 +16,13 @@ const DEFAULT_TITLE = "PokeSearch | Pokedex";
 const FALLBACK_POKEMON = "pikachu";
 
 export default function App() {
-  const [isMonochrome, setIsMonochrome] = useState(false);
+  const [isMonochrome, setIsMonochrome] = useStoredState("pokesearch:monochrome", false, Boolean);
   const [view, setView] = useState(() => readUrlState().view);
   const [pinnedPokemon, setPinnedPokemon] = useState(null);
   const { isSoundOn, toggleSound, volume, changeVolume } = useSoundPreference();
   const search = usePokemonSearch(FALLBACK_POKEMON);
   const { pokemon, status, message, pokemonList } = search;
+  const favorites = useFavorites();
   const browser = usePokemonBrowser(pokemonList);
 
   function showDetail(action) {
@@ -55,7 +58,10 @@ export default function App() {
   useKeyboardShortcuts({
     onPrevious: handlePrevious,
     onNext: handleNext,
-    onRandom: handleRandom
+    onRandom: handleRandom,
+    onToggleFavorite: () => {
+      if (pokemon) favorites.toggle(pokemon.name);
+    }
   });
 
   // Reaplica o endereço quando o usuário usa voltar e avançar do navegador.
@@ -123,6 +129,8 @@ export default function App() {
         status={status}
         suggestions={search.filteredSuggestions}
         history={search.history}
+        onClearHistory={search.clearHistory}
+        favorites={favorites.names}
         onSearch={handleSearch}
         onRandom={handleRandom}
         isMonochrome={isMonochrome}
@@ -143,6 +151,7 @@ export default function App() {
         onRetry={handleRetry}
         view={view}
         browser={browser}
+        favorites={favorites}
         onSelectFromGrid={handleSearch}
         onSelectPokemon={handleSearch}
         comparison={{
