@@ -225,6 +225,13 @@
   color: var(--gb-light);
 }
 
+/* Botão ativo: sem isso o texto escuro das regras acima ficaria sobre o fundo escuro dos botões. */
+.theme-monochrome .pokemon-screen button[class*="bg-amber"],
+.theme-monochrome .pokemon-screen button[class*="bg-amber"] * {
+  background-color: var(--gb-ink);
+  color: var(--gb-light);
+}
+
 .theme-monochrome .pokemon-screen [class*="shadow-[0_0_10px"] {
   box-shadow: none;
 }
