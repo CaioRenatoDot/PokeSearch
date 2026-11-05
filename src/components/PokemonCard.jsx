@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { m } from "motion/react";
+import { habitatLabels } from "../data/pokemon.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
 import { getLevelUpMoves } from "../utils/moves.js";
@@ -159,7 +160,7 @@ export default function PokemonCard({
             </p>
             <div className="mt-3 grid gap-2">
               <InfoRow label="Categoria" value={genus || "—"} />
-              <InfoRow label="Habitat" value={habitat ? formatName(habitat) : "—"} />
+              <InfoRow label="Habitat" value={habitat ? habitatLabels[habitat] || formatName(habitat) : "—"} />
               <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : "—"} />
             </div>
           </InfoPanel>

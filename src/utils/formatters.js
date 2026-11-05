@@ -1,3 +1,5 @@
+import { typeLabels } from "../data/pokemon.js";
+
 export function formatName(value) {
   return value
     .split("-")
@@ -7,4 +9,8 @@ export function formatName(value) {
 
 export function formatPokemonNumber(id) {
   return `#${String(id).padStart(4, "0")}`;
+}
+
+export function formatTypeName(type) {
+  return typeLabels[type] || formatName(type);
 }

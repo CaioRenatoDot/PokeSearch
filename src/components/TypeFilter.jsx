@@ -1,6 +1,6 @@
 import { m } from "motion/react";
 import { typeStyles } from "../data/pokemon.js";
-import { formatName } from "../utils/formatters.js";
+import { formatTypeName } from "../utils/formatters.js";
 
 const types = Object.keys(typeStyles);
 
@@ -22,7 +22,7 @@ export default function TypeFilter({ activeType, onSelect }) {
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.96 }}
           >
-            {formatName(type)}
+            {formatTypeName(type)}
           </m.button>
         );
       })}

@@ -21,6 +21,29 @@ export const typeStyles = {
   fairy: "bg-fuchsia-500"
 };
 
+export const typeNames = Object.keys(typeStyles);
+
+export const typeLabels = {
+  normal: "Normal",
+  fire: "Fogo",
+  water: "Água",
+  electric: "Elétrico",
+  grass: "Planta",
+  ice: "Gelo",
+  fighting: "Lutador",
+  poison: "Venenoso",
+  ground: "Terrestre",
+  flying: "Voador",
+  psychic: "Psíquico",
+  bug: "Inseto",
+  rock: "Pedra",
+  ghost: "Fantasma",
+  dragon: "Dragão",
+  dark: "Sombrio",
+  steel: "Aço",
+  fairy: "Fada"
+};
+
 export const statLabels = {
   hp: "Vitalidade",
   attack: "Poder",
@@ -28,4 +51,16 @@ export const statLabels = {
   "special-attack": "Especial",
   "special-defense": "Resist.",
   speed: "Agilidade"
+};
+
+export const habitatLabels = {
+  cave: "Caverna",
+  forest: "Floresta",
+  grassland: "Campo",
+  mountain: "Montanha",
+  rare: "Raro",
+  "rough-terrain": "Terreno acidentado",
+  sea: "Mar",
+  urban: "Urbano",
+  "waters-edge": "Beira d'água"
 };
