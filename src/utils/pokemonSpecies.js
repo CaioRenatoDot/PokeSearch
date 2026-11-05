@@ -4,7 +4,7 @@ const PREFERRED_LANGUAGES = ["en"];
 function cleanFlavorText(text) {
   return text
     .replace(/[\n\f\r]/g, " ")
-    .replace(/\u00ad/g, "")
+    .replace(/­/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -16,6 +16,11 @@ function pickByLanguage(entries, languages = PREFERRED_LANGUAGES) {
   }
 
   return entries[0] || null;
+}
+
+function extractIdFromUrl(url) {
+  const match = /\/(\d+)\/?$/.exec(url || "");
+  return match ? Number(match[1]) : null;
 }
 
 export function getFlavorText(species) {
@@ -30,4 +35,9 @@ export function getGenus(species) {
 
 export function getHabitat(species) {
   return species?.habitat?.name || "";
+}
+
+// Formas alternativas têm id próprio acima de 10000, mas pertencem à espécie do número da Pokedex.
+export function getSpeciesId(pokemon) {
+  return extractIdFromUrl(pokemon?.species?.url) ?? pokemon?.id ?? null;
 }

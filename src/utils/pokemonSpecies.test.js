@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFlavorText, getGenus, getHabitat } from "./pokemonSpecies.js";
+import { getFlavorText, getGenus, getHabitat, getSpeciesId } from "./pokemonSpecies.js";
 
 // A PokeAPI corta palavras com hífen suave e quebra linhas com \f no meio do texto.
 const SOFT_HYPHEN = "\u00ad";
@@ -40,5 +40,18 @@ describe("getGenus e getHabitat", () => {
   it("leem os campos da espécie", () => {
     expect(getGenus(species)).toBe("Mouse Pokémon");
     expect(getHabitat(species)).toBe("forest");
+  });
+});
+
+describe("getSpeciesId", () => {
+  it("usa o número da espécie, inclusive para formas alternativas", () => {
+    const megaCharizard = { id: 10034, species: { url: "https://pokeapi.co/api/v2/pokemon-species/6/" } };
+
+    expect(getSpeciesId(megaCharizard)).toBe(6);
+  });
+
+  it("cai no id do Pokémon sem espécie", () => {
+    expect(getSpeciesId({ id: 25 })).toBe(25);
+    expect(getSpeciesId(null)).toBeNull();
   });
 });

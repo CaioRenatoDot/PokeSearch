@@ -2,7 +2,7 @@ import { useState } from "react";
 import { m } from "motion/react";
 import { habitatLabels } from "../data/pokemon.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
-import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
+import { getFlavorText, getGenus, getHabitat, getSpeciesId } from "../utils/pokemonSpecies.js";
 import { getLevelUpMoves } from "../utils/moves.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
@@ -247,7 +247,11 @@ export default function PokemonCard({
       {evolutionStages.length > 1 ? (
         <div className="pb-4">
           <InfoPanel title="Evolução">
-            <EvolutionChain stages={evolutionStages} currentId={pokemon.id} onSelect={onSelectPokemon} />
+            <EvolutionChain
+              stages={evolutionStages}
+              currentSpeciesId={getSpeciesId(pokemon)}
+              onSelect={onSelectPokemon}
+            />
           </InfoPanel>
         </div>
       ) : null}
