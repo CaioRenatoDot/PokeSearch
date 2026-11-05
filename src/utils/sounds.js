@@ -132,9 +132,21 @@ export function playPokemonCry(cryUrl) {
     cry.volume = cryVolume();
     currentCry = cry;
 
-    // Nem todo navegador toca .ogg e o autoplay pode ser bloqueado: o bipe cobre os dois casos.
-    cry.addEventListener("error", () => playSearchSound("success"), { once: true });
-    cry.play().catch(() => playSearchSound("success"));
+    let hasFallenBack = false;
+
+    // Nem todo navegador toca .ogg: nesse caso o bipe substitui o grito, uma vez só.
+    function fallBackToBeep() {
+      if (hasFallenBack || cry !== currentCry) return;
+
+      hasFallenBack = true;
+      playSearchSound("success");
+    }
+
+    cry.addEventListener("error", fallBackToBeep, { once: true });
+    cry.play().catch(error => {
+      // AbortError é o grito trocado pelo próximo e NotAllowedError é o autoplay bloqueado, que também calaria o bipe.
+      if (error?.name !== "AbortError" && error?.name !== "NotAllowedError") fallBackToBeep();
+    });
   } catch {
     playSearchSound("success");
   }
