@@ -1,30 +1,23 @@
-import { useEffect, useState } from "react";
-import { getType } from "../api/pokeApi.js";
-import { buildDamageMultipliers, groupMultipliers } from "../utils/typeEffectiveness.js";
+import { useMemo } from "react";
+import { buildDamageMultipliers, getStrongAgainst, groupMultipliers } from "../utils/typeEffectiveness.js";
+import { useTypeResources } from "./useTypeResources.js";
 
-const EMPTY_GROUPS = [];
+const NO_GROUPS = [];
+const NO_TYPES = [];
 
 export function useTypeEffectiveness(types) {
-  const [loaded, setLoaded] = useState({ key: null, groups: EMPTY_GROUPS });
-  const typeKey = types.join(",");
+  const { index, isLoading, failed } = useTypeResources(types);
 
-  useEffect(() => {
-    if (!typeKey) return;
+  const { groups, strongAgainst } = useMemo(() => {
+    if (!index) return { groups: NO_GROUPS, strongAgainst: NO_TYPES };
 
-    let isCurrent = true;
+    const resources = Object.values(index);
 
-    Promise.all(typeKey.split(",").map(getType))
-      .then(resources => {
-        if (isCurrent) setLoaded({ key: typeKey, groups: groupMultipliers(buildDamageMultipliers(resources)) });
-      })
-      .catch(() => {
-        if (isCurrent) setLoaded({ key: typeKey, groups: EMPTY_GROUPS });
-      });
-
-    return () => {
-      isCurrent = false;
+    return {
+      groups: groupMultipliers(buildDamageMultipliers(resources)),
+      strongAgainst: getStrongAgainst(resources)
     };
-  }, [typeKey]);
+  }, [index]);
 
-  return loaded.key === typeKey ? loaded.groups : EMPTY_GROUPS;
+  return { groups, strongAgainst, isLoading, failed };
 }

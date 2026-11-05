@@ -19,7 +19,7 @@ import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
-import { InfoPanel, InfoRow } from "./InfoPanel.jsx";
+import { InfoPanel, InfoRow, PanelNote } from "./InfoPanel.jsx";
 import MovesPanel from "./MovesPanel.jsx";
 import PokemonForms from "./PokemonForms.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
@@ -64,8 +64,8 @@ export default function PokemonCard({
   const habitat = getHabitat(species);
   const evolutionStages = useEvolutionChain(species);
   const varieties = getVarieties(species);
-  const effectiveness = useTypeEffectiveness(pokemon.types.map(item => item.type.name));
   const types = pokemon.types.map(item => item.type.name);
+  const effectiveness = useTypeEffectiveness(types);
   const abilities = pokemon.abilities.map(item => ({
     name: formatName(item.ability.name),
     hidden: item.is_hidden
@@ -221,27 +221,8 @@ export default function PokemonCard({
             </div>
           </InfoPanel>
 
-          <InfoPanel title="Dano recebido">
-            {effectiveness.length ? (
-              <div className="grid gap-3">
-                {effectiveness.map(group => (
-                  <div key={group.multiplier} className="grid gap-2">
-                    <span className="font-pixel text-lg font-black uppercase leading-5 text-emerald-950/60">
-                      {group.label}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {group.types.map(type => (
-                        <TypeBadge key={type} type={type} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="font-display text-base leading-6 text-emerald-950/60">
-                Sem vantagens ou fraquezas fora do normal.
-              </p>
-            )}
+          <InfoPanel title="Tipos em batalha">
+            <TypeMatchups effectiveness={effectiveness} />
           </InfoPanel>
 
           <MovesPanel pokemon={pokemon} />
@@ -268,6 +249,44 @@ export default function PokemonCard({
         </div>
       ) : null}
     </m.article>
+  );
+}
+
+function TypeMatchups({ effectiveness }) {
+  const { groups, strongAgainst, isLoading, failed } = effectiveness;
+
+  if (isLoading) return <PanelNote>Carregando...</PanelNote>;
+  if (failed) return <PanelNote>Não consegui carregar as relações de tipo.</PanelNote>;
+
+  return (
+    <div className="grid gap-3">
+      <p className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">Dano recebido</p>
+      {groups.length ? (
+        groups.map(group => (
+          <div key={group.multiplier} className="grid gap-2">
+            <span className="font-pixel text-lg font-black uppercase leading-5 text-emerald-950/60">{group.label}</span>
+            <div className="flex flex-wrap gap-2">
+              {group.types.map(type => (
+                <TypeBadge key={type} type={type} />
+              ))}
+            </div>
+          </div>
+        ))
+      ) : (
+        <PanelNote>Sem vantagens ou fraquezas fora do normal.</PanelNote>
+      )}
+
+      {strongAgainst.length ? (
+        <>
+          <p className="mt-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink">Forte contra</p>
+          <div className="flex flex-wrap gap-2">
+            {strongAgainst.map(type => (
+              <TypeBadge key={type} type={type} />
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 }
 

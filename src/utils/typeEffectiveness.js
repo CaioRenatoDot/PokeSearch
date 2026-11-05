@@ -1,10 +1,8 @@
-import { typeStyles } from "../data/pokemon.js";
-
-const ALL_TYPES = Object.keys(typeStyles);
+import { typeNames } from "../data/pokemon.js";
 
 // Cada tipo do defensor multiplica o dano recebido; o resultado final e o produto dos dois.
 export function buildDamageMultipliers(typeResources) {
-  const multipliers = Object.fromEntries(ALL_TYPES.map(type => [type, 1]));
+  const multipliers = Object.fromEntries(typeNames.map(type => [type, 1]));
 
   for (const resource of typeResources) {
     const relations = resource?.damage_relations;
@@ -39,6 +37,25 @@ export function groupMultipliers(multipliers) {
   return [...groups.entries()]
     .sort((a, b) => b[0] - a[0])
     .map(([multiplier, types]) => ({ multiplier, types, label: formatMultiplier(multiplier) }));
+}
+
+// Tipos que levam dano dobrado de pelo menos um dos tipos do atacante.
+export function getStrongAgainst(typeResources) {
+  const strong = new Set();
+
+  for (const resource of typeResources) {
+    for (const { name } of resource?.damage_relations?.double_damage_to || []) {
+      strong.add(name);
+    }
+  }
+
+  return typeNames.filter(type => strong.has(type));
+}
+
+// O melhor golpe com bônus de tipo (STAB) que o atacante tem contra o defensor.
+export function bestStabMultiplier(attackerTypes, defenderResources) {
+  const multipliers = buildDamageMultipliers(defenderResources);
+  return Math.max(...attackerTypes.map(type => multipliers[type] ?? 1));
 }
 
 export function formatMultiplier(multiplier) {
