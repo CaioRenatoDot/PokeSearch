@@ -76,7 +76,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
 
   return (
     <m.form
-      className="relative grid gap-3 sm:grid-cols-[1fr_auto_auto] lg:grid-cols-1"
+      className="relative grid gap-3 sm:grid-cols-[1fr_auto_auto] lg:grid-cols-2"
       onSubmit={handleSubmit}
       animate={status === "error" ? { x: [0, -8, 8, -4, 4, 0] } : { x: 0 }}
       transition={{ duration: 0.32 }}
@@ -87,7 +87,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       <p className="sr-only" id={`${listId}-hint`}>
         Use as setas para cima e para baixo para navegar pelas sugestões e Enter para escolher.
       </p>
-      <div className="relative min-w-0">
+      <div className="relative min-w-0 lg:col-span-2">
         <input
           id="pokemonInput"
           value={query}
@@ -143,7 +143,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       </div>
 
       <m.button
-        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 font-pixel text-xl font-black uppercase leading-5 text-slate-950 shadow-[inset_0_-4px_0_rgba(91,55,0,0.16)] transition hover:bg-amber-200"
+        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 font-pixel text-xl font-black uppercase leading-5 text-slate-950 shadow-[inset_0_-4px_0_rgba(91,55,0,0.16)] transition hover:bg-amber-200 lg:px-2 lg:text-lg"
         type="submit"
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
@@ -153,7 +153,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       </m.button>
 
       <m.button
-        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg border-2 border-white/25 bg-slate-950/20 px-4 font-pixel text-xl font-black uppercase leading-5 text-white transition hover:bg-white/20"
+        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg border-2 border-white/25 bg-slate-950/20 px-4 font-pixel text-xl font-black uppercase leading-5 text-white transition hover:bg-white/20 lg:px-2 lg:text-lg"
         type="button"
         onClick={onRandom}
         whileHover={{ y: -2 }}

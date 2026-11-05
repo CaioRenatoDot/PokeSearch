@@ -84,7 +84,7 @@ export default function PokemonCard({
       ) : null}
 
       <m.div
-        className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)]"
+        className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
         animate={{ scale: 1 }}
         transition={{ duration: 0.24, ease: "easeOut" }}
       >
@@ -120,8 +120,8 @@ export default function PokemonCard({
             </div>
           </m.div>
           <m.h2
-            className="mt-2 font-display leading-tight capitalize text-dex-ink"
-            animate={{ fontSize: "clamp(2rem, 11vw, 3rem)" }}
+            className="mt-2 font-display leading-tight capitalize text-dex-ink [overflow-wrap:anywhere]"
+            animate={{ fontSize: "clamp(1.75rem, 8vw, 3rem)" }}
             transition={{ duration: 0.24 }}
             variants={itemVariants}
           >
@@ -136,21 +136,23 @@ export default function PokemonCard({
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
 
-          <m.div className="mt-6 grid gap-3 sm:grid-cols-3" variants={itemVariants}>
+          <m.div className="mt-6 grid grid-cols-2 gap-3" variants={itemVariants}>
             <FactCard icon="ruler" label="Altura" value={`${(pokemon.height / 10).toFixed(1)} m`} />
             <FactCard icon="weight" label="Peso" value={`${(pokemon.weight / 10).toFixed(1)} kg`} />
-            <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
+            <div className="col-span-2">
+              <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
+            </div>
           </m.div>
         </m.div>
       </m.div>
 
       <m.div
-        className="grid gap-4 pb-4 pt-5 xl:grid-cols-[minmax(340px,0.85fr)_minmax(420px,1.15fr)]"
+        className="grid gap-4 pb-4 pt-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.36, ease: "easeOut" }}
       >
-        <section className="grid content-start gap-4">
+        <section className="grid min-w-0 content-start gap-4">
           <InfoPanel title="Pokedex">
             <p className="font-display text-base leading-6 text-dex-ink">
               {flavorText || "Carregando a descrição..."}
@@ -183,7 +185,7 @@ export default function PokemonCard({
           </InfoPanel>
         </section>
 
-        <section className="grid content-start gap-4">
+        <section className="grid min-w-0 content-start gap-4">
           <InfoPanel title="Atributos">
             <div className="grid gap-3">
               {pokemon.stats.map(stat => (

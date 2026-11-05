@@ -31,14 +31,14 @@ export default function SearchPanel({
 
   return (
     <m.aside
-      className="search-panel relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-5 lg:overflow-hidden lg:rounded-r-none lg:p-7"
+      className="search-panel scrollbar-none relative z-10 flex min-h-0 flex-col gap-4 overflow-visible rounded-lg bg-gradient-to-br from-dex-red to-dex-redDark p-4 text-white shadow-dex sm:p-5 lg:h-full lg:gap-3 lg:overflow-y-auto lg:rounded-r-none lg:px-7 lg:py-5"
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.48, ease: "easeOut" }}
     >
       <div className="flex items-center gap-3 sm:gap-4">
         <m.div
-          className="gb-lens grid h-16 w-16 shrink-0 place-items-center rounded-full border-[5px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)] sm:h-20 sm:w-20 sm:border-[6px]"
+          className="gb-lens grid h-16 w-16 shrink-0 place-items-center rounded-full border-[5px] border-white bg-sky-300 shadow-[inset_0_-12px_20px_rgba(29,109,159,0.36),0_12px_28px_rgba(60,19,23,0.28)] sm:h-20 sm:w-20 sm:border-[6px] lg:h-16 lg:w-16 lg:border-[5px]"
           animate={{ scale: [1, 1.045, 1] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -144,7 +144,7 @@ export default function SearchPanel({
         onRandom={onRandom}
       />
 
-      <p className="hidden font-pixel text-sm font-bold uppercase leading-5 text-white/55 lg:block">
+      <p className="hidden font-pixel text-xs font-bold uppercase leading-4 text-white/55 lg:block">
         Atalhos: / buscar · ← → navegar · R aleatório
       </p>
 
@@ -155,7 +155,7 @@ export default function SearchPanel({
         onSelect={onSearch}
       />
 
-      <PokeballMark className="absolute bottom-6 right-6 hidden opacity-10 lg:block" />
+      <PokeballMark className="pointer-events-none absolute bottom-6 right-6 -z-10 hidden opacity-10 lg:block" />
     </m.aside>
   );
 }

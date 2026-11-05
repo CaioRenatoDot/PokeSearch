@@ -59,7 +59,7 @@ export default function App() {
 
   return (
     <m.main
-      className={`app-shell grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_1fr] lg:gap-0 lg:overflow-hidden lg:p-5 ${
+      className={`app-shell grid min-h-dvh grid-cols-1 gap-3 bg-page p-3 lg:h-screen lg:grid-cols-[420px_minmax(0,1fr)] lg:gap-0 lg:overflow-hidden lg:p-5 ${
         isMonochrome ? "theme-monochrome" : ""
       }`}
       initial={{ opacity: 0, scale: 0.985 }}

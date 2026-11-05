@@ -17,8 +17,8 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
   }, [activeTab, historyItems, quickItems, suggestionItems]);
 
   return (
-    <section className="min-h-0 rounded-lg border border-white/20 bg-slate-950/20 p-3">
-      <div className="mb-3 grid grid-cols-3 gap-1.5 sm:gap-2">
+    <section className="flex min-h-0 flex-col rounded-lg border border-white/20 bg-slate-950/20 p-3 lg:min-h-36">
+      <div className="mb-3 grid shrink-0 grid-cols-3 gap-1.5 sm:gap-2">
         {tabs.map(tab => {
           const isActive = tab.id === activeTab;
 
@@ -40,7 +40,7 @@ export default function PanelTabs({ quickItems, suggestionItems, historyItems, o
         })}
       </div>
 
-      <div className="scrollbar-none max-h-40 overflow-y-auto pr-1 sm:max-h-48">
+      <div className="scrollbar-none max-h-40 min-h-0 overflow-y-auto pr-1 sm:max-h-48">
         {items.length ? (
           <div className="grid grid-cols-2 gap-2">
             {items.map((name, index) => (

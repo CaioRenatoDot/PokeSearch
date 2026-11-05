@@ -16,7 +16,7 @@ export default function EmptyState({ status, message }) {
       exit={{ opacity: 0, y: -14, scale: 0.98 }}
       transition={{ duration: 0.3 }}
     >
-      <PokeballMark spin={isLoading} className="mx-auto" />
+      <PokeballMark spin={isLoading} className="relative mx-auto" />
       <h2 className="mt-6 font-display text-2xl leading-9 text-dex-ink sm:text-3xl">{title}</h2>
       <p className="mx-auto mt-3 max-w-md text-xl font-medium leading-7 text-emerald-950/75">{copy}</p>
     </m.div>
