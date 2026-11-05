@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PokemonNotFoundError, getPokemon, getPokemonList } from "../api/pokeApi.js";
+import { MAX_POKEDEX_ID } from "../data/pokemon.js";
 import { getSpeciesId } from "../utils/pokemonSpecies.js";
 import { findClosestNames, normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
@@ -7,8 +8,6 @@ import { toNameList } from "../utils/storage.js";
 import { readUrlState, updateUrl } from "../utils/url.js";
 import { useStoredState } from "./useStoredState.js";
 
-// Ultimo numero da Pokedex nacional; formas alternativas usam ids acima de 10000.
-const MAX_POKEDEX_ID = 1025;
 const HISTORY_SIZE = 12;
 
 export function usePokemonSearch(fallbackQuery = "") {

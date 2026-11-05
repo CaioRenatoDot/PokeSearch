@@ -23,7 +23,7 @@ export default function App() {
   const search = usePokemonSearch(FALLBACK_POKEMON);
   const { pokemon, status, message, pokemonList } = search;
   const favorites = useFavorites();
-  const browser = usePokemonBrowser(pokemonList);
+  const browser = usePokemonBrowser(pokemonList, favorites.names);
 
   function showDetail(action) {
     return (...args) => {
@@ -152,7 +152,6 @@ export default function App() {
         view={view}
         browser={browser}
         favorites={favorites}
-        onSelectFromGrid={handleSearch}
         onSelectPokemon={handleSearch}
         comparison={{
           pinned: pinnedPokemon,

@@ -20,7 +20,6 @@ export default function PokemonScreen({
   navigation,
   view,
   browser,
-  onSelectFromGrid,
   comparison,
   favorites,
   onSelectPokemon
@@ -76,7 +75,7 @@ export default function PokemonScreen({
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
           {isBrowsing ? (
-            <PokemonGrid key="grid" browser={browser} onSelect={onSelectFromGrid} />
+            <PokemonGrid key="grid" browser={browser} favorites={favorites} onSelect={onSelectPokemon} />
           ) : isComparing ? (
             <ComparisonView
               key={`compare-${pinned.id}-${pokemon.id}`}
