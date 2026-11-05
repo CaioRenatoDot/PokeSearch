@@ -10,6 +10,9 @@ export default function PokemonScreen({
   pokemon,
   status,
   message,
+  failure,
+  didYouMean,
+  onRetry,
   navigation,
   view,
   browser,
@@ -73,7 +76,15 @@ export default function PokemonScreen({
               }}
             />
           ) : (
-            <EmptyState key={status} status={status} message={message} />
+            <EmptyState
+              key={status}
+              status={status}
+              message={message}
+              failure={failure}
+              didYouMean={didYouMean}
+              onSelect={onSelectPokemon}
+              onRetry={onRetry}
+            />
           )}
         </AnimatePresence>
       </div>

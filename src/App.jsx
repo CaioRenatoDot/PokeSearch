@@ -21,11 +21,14 @@ export default function App() {
     pokemon,
     status,
     message,
+    failure,
+    didYouMean,
     filteredSuggestions,
     pokemonList,
     history,
     searchPokemon,
     searchRandomPokemon,
+    retrySearch,
     goToPreviousPokemon,
     goToNextPokemon,
     hasPreviousPokemon,
@@ -44,6 +47,7 @@ export default function App() {
   const handleRandom = showDetail(searchRandomPokemon);
   const handlePrevious = showDetail(goToPreviousPokemon);
   const handleNext = showDetail(goToNextPokemon);
+  const handleRetry = showDetail(retrySearch);
 
   useKeyboardShortcuts({
     onPrevious: handlePrevious,
@@ -87,6 +91,9 @@ export default function App() {
         pokemon={pokemon}
         status={status}
         message={message}
+        failure={failure}
+        didYouMean={didYouMean}
+        onRetry={handleRetry}
         view={view}
         browser={browser}
         onSelectFromGrid={handleSearch}

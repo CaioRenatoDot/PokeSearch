@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSearchLabel, normalizePokemonQuery, rankSuggestions } from "./search.js";
+import { findClosestNames, formatSearchLabel, normalizePokemonQuery, rankSuggestions } from "./search.js";
 
 describe("normalizePokemonQuery", () => {
   it("normaliza caixa, espaços e acentos", () => {
@@ -60,6 +60,30 @@ describe("rankSuggestions", () => {
   it("respeita o limite e ignora termo vazio", () => {
     expect(rankSuggestions(list, "e", 2)).toHaveLength(2);
     expect(rankSuggestions(list, "")).toEqual([]);
+  });
+});
+
+describe("findClosestNames", () => {
+  const list = [
+    { id: 6, name: "charizard" },
+    { id: 25, name: "pikachu" },
+    { id: 151, name: "mew" },
+    { id: 52, name: "meowth" }
+  ];
+
+  it("corrige erros de digitação", () => {
+    expect(findClosestNames(list, "charzard")).toEqual(["charizard"]);
+    expect(findClosestNames(list, "pikachuu")).toEqual(["pikachu"]);
+    expect(findClosestNames(list, "picachu")).toEqual(["pikachu"]);
+  });
+
+  it("não chuta quando o termo está longe de tudo", () => {
+    expect(findClosestNames(list, "digimon")).toEqual([]);
+  });
+
+  it("ignora números e termos curtos demais", () => {
+    expect(findClosestNames(list, "9999")).toEqual([]);
+    expect(findClosestNames(list, "me")).toEqual([]);
   });
 });
 

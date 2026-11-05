@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getPokemon, getPokemonList } from "../api/pokeApi.js";
-import { normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
+import { PokemonNotFoundError, getPokemon, getPokemonList } from "../api/pokeApi.js";
+import { findClosestNames, normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
 import { readPokemonFromUrl, writePokemonToUrl } from "../utils/url.js";
 
@@ -12,6 +12,8 @@ export function usePokemonSearch(fallbackQuery = "") {
   const [pokemon, setPokemon] = useState(null);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  // Guarda o tipo de falha e o termo: a tela oferece sugestões ou "tentar de novo" conforme o caso.
+  const [failure, setFailure] = useState(null);
   const [pokemonList, setPokemonList] = useState([]);
   const [history, setHistory] = useState([]);
   // Cada busca recebe um numero; respostas de buscas antigas sao descartadas.
@@ -22,6 +24,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     () => rankSuggestions(pokemonList, normalizedQuery),
     [pokemonList, normalizedQuery]
   );
+  const didYouMean = useMemo(
+    () => (failure?.kind === "not-found" ? findClosestNames(pokemonList, failure.query) : []),
+    [pokemonList, failure]
+  );
 
   async function searchPokemon(nextQuery) {
     const cleanQuery = normalizePokemonQuery(nextQuery);
@@ -29,6 +35,7 @@ export function usePokemonSearch(fallbackQuery = "") {
     if (!cleanQuery) {
       setStatus("error");
       setMessage("Digite um nome ou número para pesquisar.");
+      setFailure({ kind: "empty", query: "" });
       setPokemon(null);
       playSearchSound("error");
       return;
@@ -40,6 +47,7 @@ export function usePokemonSearch(fallbackQuery = "") {
     setQuery(cleanQuery);
     setStatus("loading");
     setMessage("");
+    setFailure(null);
 
     try {
       const data = await getPokemon(cleanQuery);
@@ -54,9 +62,16 @@ export function usePokemonSearch(fallbackQuery = "") {
     } catch (error) {
       if (requestId !== requestIdRef.current) return;
 
+      const isNotFound = error instanceof PokemonNotFoundError;
+
       setPokemon(null);
       setStatus("error");
-      setMessage(error.message || "Não consegui consultar a PokeAPI agora.");
+      setMessage(
+        isNotFound
+          ? `Não encontrei "${cleanQuery}" na Pokedex.`
+          : "Não consegui falar com a PokeAPI. Confira sua conexão e tente de novo."
+      );
+      setFailure({ kind: isNotFound ? "not-found" : "network", query: cleanQuery });
       playSearchSound("error");
     }
   }
@@ -82,6 +97,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     searchPokemon(String(Math.floor(Math.random() * MAX_POKEDEX_ID) + 1));
   }
 
+  function retrySearch() {
+    if (failure?.query) searchPokemon(failure.query);
+  }
+
   useEffect(() => {
     getPokemonList()
       .then(setPokemonList)
@@ -102,11 +121,14 @@ export function usePokemonSearch(fallbackQuery = "") {
     pokemon,
     status,
     message,
+    failure,
+    didYouMean,
     filteredSuggestions,
     pokemonList,
     history,
     searchPokemon,
     searchRandomPokemon,
+    retrySearch,
     goToPreviousPokemon,
     goToNextPokemon,
     hasPreviousPokemon: previousId !== null,
