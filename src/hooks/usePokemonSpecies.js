@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPokemonSpecies } from "../api/pokeApi.js";
 
+// Devolve `undefined` enquanto carrega e `null` se falhou, para a tela não prometer um dado que não vem.
 export function usePokemonSpecies(pokemon) {
   // O estado guarda a que URL ele pertence, para nunca devolver a espécie do pokémon anterior.
   const [loaded, setLoaded] = useState({ url: null, data: null });
@@ -24,5 +25,5 @@ export function usePokemonSpecies(pokemon) {
     };
   }, [speciesUrl]);
 
-  return loaded.url === speciesUrl ? loaded.data : null;
+  return loaded.url === speciesUrl ? loaded.data : undefined;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PokemonNotFoundError, getPokemon, getPokemonList } from "../api/pokeApi.js";
+import { getSpeciesId } from "../utils/pokemonSpecies.js";
 import { findClosestNames, normalizePokemonQuery, rankSuggestions } from "../utils/search.js";
 import { playPokemonCry, playSearchSound } from "../utils/sounds.js";
 import { readUrlState, updateUrl } from "../utils/url.js";
@@ -85,8 +86,10 @@ export function usePokemonSearch(fallbackQuery = "") {
     }
   }
 
-  const previousId = pokemon && pokemon.id > 1 && pokemon.id <= MAX_POKEDEX_ID ? pokemon.id - 1 : null;
-  const nextId = pokemon && pokemon.id < MAX_POKEDEX_ID ? pokemon.id + 1 : null;
+  // Formas alternativas navegam a partir do número da espécie: da Mega Charizard para o Squirtle.
+  const speciesId = getSpeciesId(pokemon);
+  const previousId = speciesId && speciesId > 1 ? speciesId - 1 : null;
+  const nextId = speciesId && speciesId < MAX_POKEDEX_ID ? speciesId + 1 : null;
 
   function goToPreviousPokemon() {
     if (previousId) searchPokemon(String(previousId));
@@ -97,9 +100,10 @@ export function usePokemonSearch(fallbackQuery = "") {
   }
 
   function searchRandomPokemon() {
-    if (pokemonList.length) {
-      const randomEntry = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-      searchPokemon(randomEntry.name);
+    const candidates = pokemonList.filter(entry => entry.id <= MAX_POKEDEX_ID);
+
+    if (candidates.length) {
+      searchPokemon(candidates[Math.floor(Math.random() * candidates.length)].name);
       return;
     }
 

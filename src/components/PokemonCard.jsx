@@ -2,7 +2,17 @@ import { useState } from "react";
 import { m } from "motion/react";
 import { habitatLabels } from "../data/pokemon.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
-import { getFlavorText, getGenus, getHabitat, getSpeciesId } from "../utils/pokemonSpecies.js";
+import {
+  getEggGroups,
+  getFlavorText,
+  getGenderRatio,
+  getGenerationLabel,
+  getGenus,
+  getHabitat,
+  getRarityLabel,
+  getSpeciesId,
+  getVarieties
+} from "../utils/pokemonSpecies.js";
 import { getLevelUpMoves } from "../utils/moves.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
@@ -10,6 +20,8 @@ import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
+import { InfoPanel, InfoRow } from "./InfoPanel.jsx";
+import PokemonForms from "./PokemonForms.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
 import SpriteModeControl from "./SpriteModeControl.jsx";
 import StatBar from "./StatBar.jsx";
@@ -47,10 +59,11 @@ export default function PokemonCard({
 }) {
   const [spriteMode, setSpriteMode] = useState("animated");
   const species = usePokemonSpecies(pokemon);
-  const flavorText = getFlavorText(species);
+  const isSpeciesLoading = species === undefined;
   const genus = getGenus(species);
   const habitat = getHabitat(species);
   const evolutionStages = useEvolutionChain(species);
+  const varieties = getVarieties(species);
   const effectiveness = useTypeEffectiveness(pokemon.types.map(item => item.type.name));
   const types = pokemon.types.map(item => item.type.name);
   const abilities = pokemon.abilities.map(item => ({
@@ -59,7 +72,9 @@ export default function PokemonCard({
   }));
   const primaryAbilities = abilities.slice(0, 2).map(item => item.name).join(", ");
   const moves = getLevelUpMoves(pokemon);
-  const spriteCount = countSprites(pokemon.sprites);
+  const statTotal = pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
+  const rarity = getRarityLabel(species);
+  const speciesFallback = isSpeciesLoading ? "Carregando..." : "—";
 
   return (
     <m.article
@@ -129,10 +144,15 @@ export default function PokemonCard({
             {formatName(pokemon.name)}
           </m.h2>
 
-          <m.div className="mt-5 flex flex-wrap gap-2" variants={itemVariants}>
+          <m.div className="mt-5 flex flex-wrap items-center gap-2" variants={itemVariants}>
             {types.map(type => (
               <TypeBadge key={type} type={type} />
             ))}
+            {rarity ? (
+              <span className="rounded-lg border-2 border-amber-600/60 bg-amber-200 px-3 py-1.5 font-pixel text-base font-black uppercase leading-5 text-dex-ink">
+                {rarity}
+              </span>
+            ) : null}
           </m.div>
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
@@ -156,19 +176,23 @@ export default function PokemonCard({
         <section className="grid min-w-0 content-start gap-4">
           <InfoPanel title="Pokedex">
             <p className="font-display text-base leading-6 text-dex-ink">
-              {flavorText || "Carregando a descrição..."}
+              {isSpeciesLoading
+                ? "Carregando a descrição..."
+                : getFlavorText(species) || "Descrição indisponível no momento."}
             </p>
             <div className="mt-3 grid gap-2">
-              <InfoRow label="Categoria" value={genus || "—"} />
-              <InfoRow label="Habitat" value={habitat ? habitatLabels[habitat] || formatName(habitat) : "—"} />
-              <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : "—"} />
+              <InfoRow label="Categoria" value={genus || speciesFallback} />
+              <InfoRow label="Habitat" value={habitat ? habitatLabels[habitat] || formatName(habitat) : speciesFallback} />
+              <InfoRow label="Geração" value={getGenerationLabel(species) || speciesFallback} />
             </div>
           </InfoPanel>
 
           <InfoPanel title="Dados de treino">
             <InfoRow label="Experiência" value={pokemon.base_experience ?? "N/A"} />
-            <InfoRow label="Ordem" value={pokemon.order ?? "N/A"} />
-            <InfoRow label="Sprites" value={spriteCount} />
+            <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : speciesFallback} />
+            <InfoRow label="Amizade base" value={species?.base_happiness ?? speciesFallback} />
+            <InfoRow label="Gênero" value={getGenderRatio(species) || speciesFallback} />
+            <InfoRow label="Grupos de ovo" value={getEggGroups(species) || speciesFallback} />
           </InfoPanel>
 
           <InfoPanel title="Habilidades">
@@ -192,6 +216,9 @@ export default function PokemonCard({
               {pokemon.stats.map(stat => (
                 <StatBar key={stat.stat.name} stat={stat} />
               ))}
+            </div>
+            <div className="mt-2">
+              <InfoRow label="Total" value={statTotal} />
             </div>
           </InfoPanel>
 
@@ -255,6 +282,14 @@ export default function PokemonCard({
           </InfoPanel>
         </div>
       ) : null}
+
+      {varieties.length > 1 ? (
+        <div className="pb-4">
+          <InfoPanel title="Formas">
+            <PokemonForms varieties={varieties} currentName={pokemon.name} onSelect={onSelectPokemon} />
+          </InfoPanel>
+        </div>
+      ) : null}
     </m.article>
   );
 }
@@ -274,36 +309,4 @@ function NavButton({ icon, label, onClick, disabled }) {
       <Icon name={icon} size={20} strokeWidth={3} />
     </m.button>
   );
-}
-
-function InfoPanel({ title, children }) {
-  return (
-    <m.div
-      className="rounded-lg border-2 border-emerald-950/20 bg-white/45 p-4 shadow-[inset_0_-4px_0_rgba(20,32,51,0.06)]"
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28 }}
-    >
-      <h3 className="mb-4 font-pixel text-xl font-black uppercase leading-6 text-dex-ink sm:text-2xl">{title}</h3>
-      {children}
-    </m.div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-3 border-b-2 border-emerald-950/10 py-2 last:border-b-0">
-      <span className="font-pixel text-lg font-black uppercase text-emerald-950/60">{label}</span>
-      <strong className="font-display text-base leading-5 text-dex-ink">{value}</strong>
-    </div>
-  );
-}
-
-function countSprites(sprites) {
-  return Object.values(sprites).reduce((total, value) => {
-    if (!value) return total;
-    if (typeof value === "string") return total + 1;
-    if (typeof value === "object") return total + countSprites(value);
-    return total;
-  }, 0);
 }
