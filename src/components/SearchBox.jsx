@@ -8,11 +8,12 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
   const listRef = useRef(null);
   // A opção destacada guarda a lista a que pertence, então trocar de sugestões já zera o destaque.
   const [highlight, setHighlight] = useState({ key: "", index: -1 });
-  const [isListDismissed, setIsListDismissed] = useState(false);
+  // A lista só abre enquanto a pessoa digita: buscas por atalho, grade ou link não devem cobrir o painel.
+  const [isTyping, setIsTyping] = useState(false);
 
   const suggestionsKey = suggestions.join("|");
   const activeIndex = highlight.key === suggestionsKey ? highlight.index : -1;
-  const isListOpen = suggestions.length > 0 && !isListDismissed;
+  const isListOpen = suggestions.length > 0 && isTyping;
   const activeOptionId = isListOpen && activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined;
 
   function setActiveIndex(index) {
@@ -26,24 +27,24 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
 
   function handleChange(event) {
     setQuery(event.target.value);
-    setIsListDismissed(false);
+    setIsTyping(true);
   }
 
   function handleSelect(name) {
-    setIsListDismissed(true);
+    setIsTyping(false);
     setActiveIndex(-1);
     onSearch(name);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    setIsListDismissed(true);
+    setIsTyping(false);
     onSearch(query);
   }
 
   function handleKeyDown(event) {
     if (event.key === "Escape") {
-      setIsListDismissed(true);
+      setIsTyping(false);
       setActiveIndex(-1);
       return;
     }
@@ -69,13 +70,13 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
     }
 
     if (event.key === "Tab") {
-      setIsListDismissed(true);
+      setIsTyping(false);
     }
   }
 
   return (
     <m.form
-      className="relative grid gap-3 sm:grid-cols-[1fr_auto_auto] lg:grid-cols-1"
+      className="relative grid gap-3 sm:grid-cols-[1fr_auto_auto] lg:grid-cols-2"
       onSubmit={handleSubmit}
       animate={status === "error" ? { x: [0, -8, 8, -4, 4, 0] } : { x: 0 }}
       transition={{ duration: 0.32 }}
@@ -86,12 +87,13 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       <p className="sr-only" id={`${listId}-hint`}>
         Use as setas para cima e para baixo para navegar pelas sugestões e Enter para escolher.
       </p>
-      <div className="relative min-w-0">
+      <div className="relative min-w-0 lg:col-span-2">
         <input
           id="pokemonInput"
           value={query}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onBlur={() => setIsTyping(false)}
           className="h-14 w-full min-w-0 rounded-lg border-0 bg-white px-4 font-pixel text-xl font-semibold text-dex-ink outline-none ring-4 ring-transparent transition placeholder:text-dex-ink/45 focus:ring-sky-300/70"
           placeholder="Digite nome ou número"
           type="search"
@@ -127,6 +129,8 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
                   }`}
                   role="option"
                   aria-selected={index === activeIndex}
+                  // Sem isso o campo perde o foco no clique e a lista fecha antes de a opção ser escolhida.
+                  onMouseDown={event => event.preventDefault()}
                   onClick={() => handleSelect(name)}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
@@ -139,7 +143,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       </div>
 
       <m.button
-        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 font-pixel text-xl font-black uppercase leading-5 text-slate-950 shadow-[inset_0_-4px_0_rgba(91,55,0,0.16)] transition hover:bg-amber-200"
+        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 font-pixel text-xl font-black uppercase leading-5 text-slate-950 shadow-[inset_0_-4px_0_rgba(91,55,0,0.16)] transition hover:bg-amber-200 lg:px-2 lg:text-lg"
         type="submit"
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.98 }}
@@ -149,7 +153,7 @@ export default function SearchBox({ query, setQuery, status, suggestions = [], o
       </m.button>
 
       <m.button
-        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg border-2 border-white/25 bg-slate-950/20 px-4 font-pixel text-xl font-black uppercase leading-5 text-white transition hover:bg-white/20"
+        className="inline-flex h-14 items-center justify-center gap-2 rounded-lg border-2 border-white/25 bg-slate-950/20 px-4 font-pixel text-xl font-black uppercase leading-5 text-white transition hover:bg-white/20 lg:px-2 lg:text-lg"
         type="button"
         onClick={onRandom}
         whileHover={{ y: -2 }}

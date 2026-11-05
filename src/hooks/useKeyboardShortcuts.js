@@ -31,21 +31,17 @@ export function useKeyboardShortcuts(handlers) {
       // Dentro do campo de busca as setas pertencem à lista de sugestões.
       if (isTyping) return;
 
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        handlersRef.current.onPrevious();
-        return;
-      }
+      const action = {
+        ArrowLeft: handlersRef.current.onPrevious,
+        ArrowRight: handlersRef.current.onNext,
+        r: handlersRef.current.onRandom,
+        f: handlersRef.current.onToggleFavorite,
+        t: handlersRef.current.onToggleTeam
+      }[event.key.length === 1 ? event.key.toLowerCase() : event.key];
 
-      if (event.key === "ArrowRight") {
+      if (action) {
         event.preventDefault();
-        handlersRef.current.onNext();
-        return;
-      }
-
-      if (event.key === "r" || event.key === "R") {
-        event.preventDefault();
-        handlersRef.current.onRandom();
+        action();
       }
     }
 

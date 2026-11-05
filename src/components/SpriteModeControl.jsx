@@ -5,7 +5,7 @@ export default function SpriteModeControl({ value, onChange }) {
   return (
     <div className="mt-5">
       <p className="mb-2 font-pixel text-base font-black uppercase leading-5 text-emerald-950/60">Sprite</p>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4">
         {spriteModes.map(mode => {
           const isActive = mode.id === value;
 

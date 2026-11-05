@@ -6,6 +6,14 @@ const pokemonCache = new Map();
 const resourceCache = new Map();
 let pokemonListPromise;
 
+// Separa "não existe" de "não consegui perguntar": a tela oferece ações diferentes para cada um.
+export class PokemonNotFoundError extends Error {
+  constructor() {
+    super("Pokémon não encontrado.");
+    this.name = "PokemonNotFoundError";
+  }
+}
+
 function getResource(url) {
   if (!resourceCache.has(url)) {
     const request = fetch(url)
@@ -50,26 +58,54 @@ function writeCachedList(list) {
   }
 }
 
-export async function getPokemon(query) {
+async function fetchJsonOrNull(url) {
+  const response = await fetch(url);
+
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Não consegui consultar a PokeAPI agora.");
+
+  return response.json();
+}
+
+async function fetchPokemon(query) {
+  const encoded = encodeURIComponent(query);
+  const pokemon = await fetchJsonOrNull(`${BASE_URL}/pokemon/${encoded}`);
+
+  if (pokemon) return pokemon;
+
+  // Espécies com várias formas não têm Pokémon com o próprio nome: "deoxys" só existe como "deoxys-normal".
+  const species = await fetchJsonOrNull(`${BASE_URL}/pokemon-species/${encoded}`);
+  const defaultVariety = species?.varieties?.find(variety => variety.is_default) ?? species?.varieties?.[0];
+
+  if (!defaultVariety) throw new PokemonNotFoundError();
+
+  const variety = await fetchJsonOrNull(defaultVariety.pokemon.url);
+
+  if (!variety) throw new PokemonNotFoundError();
+
+  return variety;
+}
+
+export function getPokemon(query) {
   const key = String(query).toLowerCase();
-  const cached = pokemonCache.get(key);
 
-  if (cached) return cached;
+  if (!pokemonCache.has(key)) {
+    const request = fetchPokemon(key)
+      .then(data => {
+        // O mesmo Pokémon chega por nome, por número e pelo termo digitado.
+        pokemonCache.set(data.name, request);
+        pokemonCache.set(String(data.id), request);
+        return data;
+      })
+      .catch(error => {
+        pokemonCache.delete(key);
+        throw error;
+      });
 
-  const response = await fetch(`${BASE_URL}/pokemon/${encodeURIComponent(query)}`);
-
-  if (!response.ok) {
-    throw new Error("Pokémon não encontrado.");
+    pokemonCache.set(key, request);
   }
 
-  const data = await response.json();
-
-  // O mesmo Pokémon chega por nome, por número e pelo termo digitado.
-  pokemonCache.set(key, data);
-  pokemonCache.set(data.name, data);
-  pokemonCache.set(String(data.id), data);
-
-  return data;
+  return pokemonCache.get(key);
 }
 
 async function fetchPokemonList() {
@@ -122,4 +158,8 @@ export function getPokemonSpecies(speciesUrl) {
 
 export function getEvolutionChain(chainUrl) {
   return getResource(chainUrl);
+}
+
+export function getMove(moveName) {
+  return getResource(`${BASE_URL}/move/${encodeURIComponent(moveName)}`);
 }

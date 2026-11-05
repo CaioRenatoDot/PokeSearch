@@ -21,6 +21,29 @@ export const typeStyles = {
   fairy: "bg-fuchsia-500"
 };
 
+export const typeNames = Object.keys(typeStyles);
+
+export const typeLabels = {
+  normal: "Normal",
+  fire: "Fogo",
+  water: "Água",
+  electric: "Elétrico",
+  grass: "Planta",
+  ice: "Gelo",
+  fighting: "Lutador",
+  poison: "Venenoso",
+  ground: "Terrestre",
+  flying: "Voador",
+  psychic: "Psíquico",
+  bug: "Inseto",
+  rock: "Pedra",
+  ghost: "Fantasma",
+  dragon: "Dragão",
+  dark: "Sombrio",
+  steel: "Aço",
+  fairy: "Fada"
+};
+
 export const statLabels = {
   hp: "Vitalidade",
   attack: "Poder",
@@ -29,3 +52,37 @@ export const statLabels = {
   "special-defense": "Resist.",
   speed: "Agilidade"
 };
+
+export const habitatLabels = {
+  cave: "Caverna",
+  forest: "Floresta",
+  grassland: "Campo",
+  mountain: "Montanha",
+  rare: "Raro",
+  "rough-terrain": "Terreno acidentado",
+  sea: "Mar",
+  urban: "Urbano",
+  "waters-edge": "Beira d'água"
+};
+
+export const damageClassLabels = {
+  physical: "Físico",
+  special: "Especial",
+  status: "Status"
+};
+
+// Faixas de número da Pokedex nacional em cada geração; formas alternativas ficam de fora.
+export const generations = [
+  { id: 1, label: "Geração I", first: 1, last: 151 },
+  { id: 2, label: "Geração II", first: 152, last: 251 },
+  { id: 3, label: "Geração III", first: 252, last: 386 },
+  { id: 4, label: "Geração IV", first: 387, last: 493 },
+  { id: 5, label: "Geração V", first: 494, last: 649 },
+  { id: 6, label: "Geração VI", first: 650, last: 721 },
+  { id: 7, label: "Geração VII", first: 722, last: 809 },
+  { id: 8, label: "Geração VIII", first: 810, last: 905 },
+  { id: 9, label: "Geração IX", first: 906, last: 1025 }
+];
+
+// Último número da Pokedex nacional; formas alternativas usam ids acima de 10000.
+export const MAX_POKEDEX_ID = generations[generations.length - 1].last;

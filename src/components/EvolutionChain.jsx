@@ -3,7 +3,7 @@ import { formatPokemonNumber } from "../utils/formatters.js";
 import { formatSearchLabel } from "../utils/search.js";
 import { getSpriteUrlById } from "../utils/pokemonSprites.js";
 
-export default function EvolutionChain({ stages, currentId, onSelect }) {
+export default function EvolutionChain({ stages, currentSpeciesId, onSelect }) {
   if (!stages.length) return null;
 
   return (
@@ -20,14 +20,15 @@ export default function EvolutionChain({ stages, currentId, onSelect }) {
             {stage.map(item => (
               <m.button
                 key={item.name}
-                className={`grid w-24 justify-items-center gap-1 rounded border-2 p-2 transition ${
-                  item.id === currentId
+                className={`grid w-28 content-start justify-items-center gap-1 rounded border-2 p-2 transition ${
+                  item.id === currentSpeciesId
                     ? "border-dex-dark bg-amber-300"
                     : "border-emerald-950/20 bg-white/55 hover:bg-white/80"
                 }`}
                 type="button"
-                onClick={() => onSelect(item.name)}
-                aria-current={item.id === currentId ? "true" : undefined}
+                // Pelo número: espécies como Wormadam não têm Pokémon com o mesmo nome.
+                onClick={() => onSelect(String(item.id))}
+                aria-current={item.id === currentSpeciesId ? "true" : undefined}
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.96 }}
               >
@@ -44,6 +45,11 @@ export default function EvolutionChain({ stages, currentId, onSelect }) {
                 <span className="font-pixel text-sm font-black uppercase leading-4 text-dex-ink">
                   {formatSearchLabel(item.name)}
                 </span>
+                {item.condition ? (
+                  <span className="text-center font-pixel text-xs font-bold leading-4 text-emerald-950/60">
+                    {item.condition}
+                  </span>
+                ) : null}
               </m.button>
             ))}
           </div>

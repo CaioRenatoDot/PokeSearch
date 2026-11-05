@@ -1,6 +1,11 @@
 import { m } from "motion/react";
 import { statLabels } from "../data/pokemon.js";
+import { useTypeResources } from "../hooks/useTypeResources.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
+import { getMemberTypes } from "../utils/team.js";
+import { bestStabMultiplier, formatMultiplier } from "../utils/typeEffectiveness.js";
+import ActionButton from "./ActionButton.jsx";
+import CopyLinkButton from "./CopyLinkButton.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
 import TypeBadge from "./TypeBadge.jsx";
 
@@ -20,21 +25,18 @@ export default function ComparisonView({ pinned, current, onClear }) {
 
   return (
     <m.div
-      className="w-full lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
+      className="w-full min-w-0 lg:scrollbar-none lg:h-full lg:overflow-y-auto lg:pr-1"
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -14 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-xl leading-7 text-dex-ink sm:text-2xl">Comparação</h2>
-        <button
-          className="rounded border-2 border-emerald-950/25 bg-white/60 px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink transition hover:bg-white/85"
-          type="button"
-          onClick={onClear}
-        >
-          Encerrar
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <CopyLinkButton />
+          <ActionButton onClick={onClear}>Encerrar</ActionButton>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -42,7 +44,7 @@ export default function ComparisonView({ pinned, current, onClear }) {
         <ComparisonHeader pokemon={current} caption="Atual" />
       </div>
 
-      <div className="mt-4 grid gap-2 pb-4">
+      <div className="mt-4 grid gap-2">
         {rows.map(row => (
           <StatComparisonRow key={row.name} row={row} />
         ))}
@@ -51,7 +53,45 @@ export default function ComparisonView({ pinned, current, onClear }) {
           label="Total"
         />
       </div>
+
+      <TypeMatchup pinned={pinned} current={current} />
     </m.div>
+  );
+}
+
+function TypeMatchup({ pinned, current }) {
+  const pinnedTypes = getMemberTypes(pinned);
+  const currentTypes = getMemberTypes(current);
+  const { index, failed } = useTypeResources([...new Set([...pinnedTypes, ...currentTypes])]);
+
+  if (failed || !index) return <div className="pb-4" />;
+
+  const toResources = types => types.map(type => index[type]);
+
+  return (
+    <div className="mt-4 grid gap-2 pb-4 sm:grid-cols-2">
+      <MatchupCard
+        attacker={pinned}
+        defender={current}
+        multiplier={bestStabMultiplier(pinnedTypes, toResources(currentTypes))}
+      />
+      <MatchupCard
+        attacker={current}
+        defender={pinned}
+        multiplier={bestStabMultiplier(currentTypes, toResources(pinnedTypes))}
+      />
+    </div>
+  );
+}
+
+function MatchupCard({ attacker, defender, multiplier }) {
+  return (
+    <div className="grid grid-cols-[1fr_auto] items-center gap-3 rounded border-2 border-emerald-950/20 bg-white/45 px-3 py-2">
+      <p className="font-pixel text-sm font-black uppercase leading-5 text-emerald-950/70">
+        Melhor golpe do tipo de {formatName(attacker.name)} contra {formatName(defender.name)}
+      </p>
+      <strong className="font-pixel text-2xl font-black leading-6 text-dex-ink">{formatMultiplier(multiplier)}</strong>
+    </div>
   );
 }
 
@@ -65,7 +105,9 @@ function ComparisonHeader({ pokemon, caption }) {
       <p className="font-pixel text-sm font-black uppercase leading-5 text-emerald-950/55">
         {formatPokemonNumber(pokemon.id)}
       </p>
-      <h3 className="font-display text-lg leading-6 text-dex-ink sm:text-xl">{formatName(pokemon.name)}</h3>
+      <h3 className="font-display text-lg leading-6 text-dex-ink [overflow-wrap:anywhere] sm:text-xl">
+        {formatName(pokemon.name)}
+      </h3>
       <div className="flex flex-wrap justify-center gap-2">
         {pokemon.types.map(item => (
           <TypeBadge key={item.type.name} type={item.type.name} />

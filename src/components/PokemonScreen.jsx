@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { AnimatePresence, m } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import EmptyState from "./EmptyState.jsx";
@@ -5,26 +6,53 @@ import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
 import PokemonGrid from "./PokemonGrid.jsx";
 import ComparisonView from "./ComparisonView.jsx";
+import TeamView from "./TeamView.jsx";
+
+// Abaixo de "lg" o painel de busca fica em cima e o resultado nasceria fora da tela.
+const STACKED_LAYOUT_QUERY = "(max-width: 1023px)";
 
 export default function PokemonScreen({
   pokemon,
   status,
   message,
+  failure,
+  didYouMean,
+  onRetry,
   navigation,
   view,
   browser,
-  onSelectFromGrid,
+  favorites,
+  team,
+  pokemonList,
   comparison,
   onSelectPokemon
 }) {
-  const isBrowsing = view === "browse";
+  const isDetail = view === "detail";
   const pinned = comparison.pinned;
   const isComparing =
-    !isBrowsing && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
+    isDetail && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
+  const sectionRef = useRef(null);
+  const hasShownContentRef = useRef(false);
+  const pokemonId = pokemon?.id;
+
+  useEffect(() => {
+    if (!pokemonId && status !== "error") return;
+
+    // A primeira resposta chega sozinha ao abrir a página; só depois a rolagem responde a um pedido.
+    if (!hasShownContentRef.current) {
+      hasShownContentRef.current = true;
+      return;
+    }
+
+    if (window.matchMedia(STACKED_LAYOUT_QUERY).matches) {
+      sectionRef.current?.scrollIntoView({ block: "start" });
+    }
+  }, [pokemonId, status, view]);
 
   return (
     <m.section
-      className="pokemon-screen relative min-h-[70dvh] overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
+      ref={sectionRef}
+      className="pokemon-screen relative min-h-[70dvh] min-w-0 overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.08, duration: 0.48, ease: "easeOut" }}
@@ -48,8 +76,16 @@ export default function PokemonScreen({
 
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
-          {isBrowsing ? (
-            <PokemonGrid key="grid" browser={browser} onSelect={onSelectFromGrid} />
+          {view === "browse" ? (
+            <PokemonGrid key="grid" browser={browser} favorites={favorites} onSelect={onSelectPokemon} />
+          ) : view === "team" ? (
+            <TeamView
+              key="team"
+              team={team}
+              pokemonList={pokemonList}
+              currentPokemon={pokemon}
+              onSelect={onSelectPokemon}
+            />
           ) : isComparing ? (
             <ComparisonView
               key={`compare-${pinned.id}-${pokemon.id}`}
@@ -66,6 +102,8 @@ export default function PokemonScreen({
               hasPrevious={navigation.hasPrevious}
               hasNext={navigation.hasNext}
               onSelectPokemon={onSelectPokemon}
+              favorites={favorites}
+              team={team}
               comparison={{
                 isPinned: Boolean(pinned),
                 onPin: comparison.onPin,
@@ -73,13 +111,21 @@ export default function PokemonScreen({
               }}
             />
           ) : (
-            <EmptyState key={status} status={status} message={message} />
+            <EmptyState
+              key={status}
+              status={status}
+              message={message}
+              failure={failure}
+              didYouMean={didYouMean}
+              onSelect={onSelectPokemon}
+              onRetry={onRetry}
+            />
           )}
         </AnimatePresence>
       </div>
 
       <AnimatePresence>
-        {!isBrowsing && !isComparing && status === "ready" && pokemon ? (
+        {isDetail && !isComparing && status === "ready" && pokemon ? (
           <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} />
         ) : null}
       </AnimatePresence>

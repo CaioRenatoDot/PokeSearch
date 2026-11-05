@@ -30,12 +30,11 @@ export default function PokemonSprite({ pokemon, compact = false, mode = "animat
       />
       <img
         className={`pokemon-sprite-image relative z-10 h-full w-full object-contain drop-shadow-[0_26px_22px_rgba(18,48,46,0.22)] ${
-          sprite.isAnimated
-            ? compact
-              ? "max-h-[24vh] max-w-[74%] xl:max-h-[30vh] xl:max-w-[74%] [image-rendering:pixelated]"
-              : "max-h-[32vh] max-w-[90%] sm:max-h-[39vh] xl:max-h-[58vh] xl:max-w-[90%] [image-rendering:pixelated]"
-            : compact
-              ? "max-h-[28vh] max-w-[78%] xl:max-h-[34vh] xl:max-w-[78%]"
+          compact
+            ? // Altura fixa igual à da caixa da comparação: em vh a arte vazava sobre o nome e os tipos.
+              `!h-28 sm:!h-36 ${sprite.isAnimated ? "[image-rendering:pixelated]" : ""}`
+            : sprite.isAnimated
+              ? "max-h-[32vh] max-w-[90%] sm:max-h-[39vh] xl:max-h-[58vh] xl:max-w-[90%] [image-rendering:pixelated]"
               : "max-h-[36vh] max-w-[92%] sm:max-h-[43vh] xl:max-h-[68vh] xl:max-w-[92%]"
         }`}
         src={sprite.src}

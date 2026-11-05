@@ -1,14 +1,29 @@
 import { useState } from "react";
 import { m } from "motion/react";
+import { habitatLabels } from "../data/pokemon.js";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
-import { getFlavorText, getGenus, getHabitat } from "../utils/pokemonSpecies.js";
-import { getLevelUpMoves } from "../utils/moves.js";
+import {
+  getEggGroups,
+  getFlavorText,
+  getGenderRatio,
+  getGenerationLabel,
+  getGenus,
+  getHabitat,
+  getRarityLabel,
+  getSpeciesId,
+  getVarieties
+} from "../utils/pokemonSpecies.js";
 import { usePokemonSpecies } from "../hooks/usePokemonSpecies.js";
 import { useEvolutionChain } from "../hooks/useEvolutionChain.js";
 import { useTypeEffectiveness } from "../hooks/useTypeEffectiveness.js";
+import ActionButton from "./ActionButton.jsx";
+import CopyLinkButton from "./CopyLinkButton.jsx";
 import EvolutionChain from "./EvolutionChain.jsx";
 import FactCard from "./FactCard.jsx";
 import Icon from "./Icon.jsx";
+import { InfoPanel, InfoRow, PanelNote } from "./InfoPanel.jsx";
+import MovesPanel from "./MovesPanel.jsx";
+import PokemonForms from "./PokemonForms.jsx";
 import PokemonSprite from "./PokemonSprite.jsx";
 import SpriteModeControl from "./SpriteModeControl.jsx";
 import StatBar from "./StatBar.jsx";
@@ -42,23 +57,29 @@ export default function PokemonCard({
   hasPrevious,
   hasNext,
   comparison,
+  favorites,
+  team,
   onSelectPokemon
 }) {
   const [spriteMode, setSpriteMode] = useState("animated");
   const species = usePokemonSpecies(pokemon);
-  const flavorText = getFlavorText(species);
+  const isSpeciesLoading = species === undefined;
   const genus = getGenus(species);
   const habitat = getHabitat(species);
   const evolutionStages = useEvolutionChain(species);
-  const effectiveness = useTypeEffectiveness(pokemon.types.map(item => item.type.name));
+  const varieties = getVarieties(species);
   const types = pokemon.types.map(item => item.type.name);
+  const effectiveness = useTypeEffectiveness(types);
   const abilities = pokemon.abilities.map(item => ({
     name: formatName(item.ability.name),
     hidden: item.is_hidden
   }));
   const primaryAbilities = abilities.slice(0, 2).map(item => item.name).join(", ");
-  const moves = getLevelUpMoves(pokemon);
-  const spriteCount = countSprites(pokemon.sprites);
+  const statTotal = pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
+  const rarity = getRarityLabel(species);
+  const isFavorite = favorites.isFavorite(pokemon.name);
+  const isInTeam = team.isInTeam(pokemon.name);
+  const speciesFallback = isSpeciesLoading ? "Carregando..." : "—";
 
   return (
     <m.article
@@ -84,7 +105,7 @@ export default function PokemonCard({
       ) : null}
 
       <m.div
-        className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(420px,1fr)_minmax(420px,1fr)]"
+        className="grid gap-4 rounded-lg border border-transparent bg-transparent p-0 shadow-none transition-colors duration-300 sm:gap-5 lg:p-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
         animate={{ scale: 1 }}
         transition={{ duration: 0.24, ease: "easeOut" }}
       >
@@ -104,68 +125,96 @@ export default function PokemonCard({
           <m.div className="flex items-center justify-between gap-3" variants={itemVariants}>
             <p className="font-display text-xs leading-6 text-emerald-950/70">{formatPokemonNumber(pokemon.id)}</p>
             <div className="flex items-center gap-2">
-              {comparison.isPinned ? null : (
-                <m.button
-                  className="rounded border-2 border-emerald-950/25 bg-white/60 px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink shadow-[inset_0_-3px_0_rgba(20,32,51,0.08)] transition hover:bg-white/85"
-                  type="button"
-                  onClick={() => comparison.onPin(pokemon)}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  Comparar
-                </m.button>
-              )}
               <NavButton icon="chevronLeft" label="Pokémon anterior" onClick={onPrevious} disabled={!hasPrevious} />
               <NavButton icon="chevronRight" label="Próximo Pokémon" onClick={onNext} disabled={!hasNext} />
             </div>
           </m.div>
           <m.h2
-            className="mt-2 font-display leading-tight capitalize text-dex-ink"
-            animate={{ fontSize: "clamp(2rem, 11vw, 3rem)" }}
+            className="mt-2 font-display leading-tight capitalize text-dex-ink [overflow-wrap:anywhere]"
+            animate={{ fontSize: "clamp(1.75rem, 8vw, 3rem)" }}
             transition={{ duration: 0.24 }}
             variants={itemVariants}
           >
             {formatName(pokemon.name)}
           </m.h2>
 
-          <m.div className="mt-5 flex flex-wrap gap-2" variants={itemVariants}>
+          <m.div className="mt-5 flex flex-wrap items-center gap-2" variants={itemVariants}>
             {types.map(type => (
               <TypeBadge key={type} type={type} />
             ))}
+            {rarity ? (
+              <span className="rounded-lg border-2 border-amber-600/60 bg-amber-200 px-3 py-1.5 font-pixel text-base font-black uppercase leading-5 text-dex-ink">
+                {rarity}
+              </span>
+            ) : null}
+          </m.div>
+
+          <m.div className="mt-4 flex flex-wrap gap-2" variants={itemVariants}>
+            <ActionButton
+              icon="star"
+              iconFilled={isFavorite}
+              isActive={isFavorite}
+              aria-pressed={isFavorite}
+              onClick={() => favorites.toggle(pokemon.name)}
+            >
+              {isFavorite ? "Favorito" : "Favoritar"}
+            </ActionButton>
+            <ActionButton
+              icon={isInTeam ? "check" : "plus"}
+              isActive={isInTeam}
+              aria-pressed={isInTeam}
+              disabled={!isInTeam && team.isFull}
+              title={!isInTeam && team.isFull ? "O time já tem 6 pokémon" : undefined}
+              onClick={() => team.toggle(pokemon.name)}
+            >
+              {isInTeam ? "No time" : "Time"}
+            </ActionButton>
+            {comparison.isPinned ? null : (
+              <ActionButton icon="compare" onClick={() => comparison.onPin(pokemon)}>
+                Comparar
+              </ActionButton>
+            )}
+            <CopyLinkButton />
           </m.div>
 
           <SpriteModeControl value={spriteMode} onChange={setSpriteMode} />
 
-          <m.div className="mt-6 grid gap-3 sm:grid-cols-3" variants={itemVariants}>
+          <m.div className="mt-6 grid grid-cols-2 gap-3" variants={itemVariants}>
             <FactCard icon="ruler" label="Altura" value={`${(pokemon.height / 10).toFixed(1)} m`} />
             <FactCard icon="weight" label="Peso" value={`${(pokemon.weight / 10).toFixed(1)} kg`} />
-            <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
+            <div className="col-span-2">
+              <FactCard icon="sparkles" label="Habilidade" value={primaryAbilities} />
+            </div>
           </m.div>
         </m.div>
       </m.div>
 
       <m.div
-        className="grid gap-4 pb-4 pt-5 xl:grid-cols-[minmax(340px,0.85fr)_minmax(420px,1.15fr)]"
+        className="grid gap-4 pb-4 pt-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.36, ease: "easeOut" }}
       >
-        <section className="grid content-start gap-4">
+        <section className="grid min-w-0 content-start gap-4">
           <InfoPanel title="Pokedex">
             <p className="font-display text-base leading-6 text-dex-ink">
-              {flavorText || "Carregando a descrição..."}
+              {isSpeciesLoading
+                ? "Carregando a descrição..."
+                : getFlavorText(species) || "Descrição indisponível no momento."}
             </p>
             <div className="mt-3 grid gap-2">
-              <InfoRow label="Categoria" value={genus || "—"} />
-              <InfoRow label="Habitat" value={habitat ? formatName(habitat) : "—"} />
-              <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : "—"} />
+              <InfoRow label="Categoria" value={genus || speciesFallback} />
+              <InfoRow label="Habitat" value={habitat ? habitatLabels[habitat] || formatName(habitat) : speciesFallback} />
+              <InfoRow label="Geração" value={getGenerationLabel(species) || speciesFallback} />
             </div>
           </InfoPanel>
 
           <InfoPanel title="Dados de treino">
             <InfoRow label="Experiência" value={pokemon.base_experience ?? "N/A"} />
-            <InfoRow label="Ordem" value={pokemon.order ?? "N/A"} />
-            <InfoRow label="Sprites" value={spriteCount} />
+            <InfoRow label="Captura" value={species ? `${species.capture_rate}/255` : speciesFallback} />
+            <InfoRow label="Amizade base" value={species?.base_happiness ?? speciesFallback} />
+            <InfoRow label="Gênero" value={getGenderRatio(species) || speciesFallback} />
+            <InfoRow label="Grupos de ovo" value={getEggGroups(species) || speciesFallback} />
           </InfoPanel>
 
           <InfoPanel title="Habilidades">
@@ -183,72 +232,84 @@ export default function PokemonCard({
           </InfoPanel>
         </section>
 
-        <section className="grid content-start gap-4">
+        <section className="grid min-w-0 content-start gap-4">
           <InfoPanel title="Atributos">
             <div className="grid gap-3">
               {pokemon.stats.map(stat => (
                 <StatBar key={stat.stat.name} stat={stat} />
               ))}
             </div>
+            <div className="mt-2">
+              <InfoRow label="Total" value={statTotal} />
+            </div>
           </InfoPanel>
 
-          <InfoPanel title="Dano recebido">
-            {effectiveness.length ? (
-              <div className="grid gap-3">
-                {effectiveness.map(group => (
-                  <div key={group.multiplier} className="grid gap-2">
-                    <span className="font-pixel text-lg font-black uppercase leading-5 text-emerald-950/60">
-                      {group.label}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {group.types.map(type => (
-                        <TypeBadge key={type} type={type} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="font-display text-base leading-6 text-emerald-950/60">
-                Sem vantagens ou fraquezas fora do normal.
-              </p>
-            )}
+          <InfoPanel title="Tipos em batalha">
+            <TypeMatchups effectiveness={effectiveness} />
           </InfoPanel>
 
-          <InfoPanel title="Golpes por nível">
-            {moves.length ? (
-              <div className="grid gap-2">
-                {moves.map(move => (
-                  <div
-                    key={move.name}
-                    className="grid grid-cols-[auto_1fr] items-center gap-3 border-b-2 border-emerald-950/10 pb-2 last:border-b-0 last:pb-0"
-                  >
-                    <span className="grid h-8 min-w-16 place-items-center rounded border-2 border-emerald-950/25 bg-[#f8efd0] px-2 font-pixel text-sm font-black uppercase leading-4 text-emerald-950/70">
-                      Nv {move.level}
-                    </span>
-                    <span className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">
-                      {formatName(move.name)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="font-display text-base leading-6 text-emerald-950/60">
-                Este pokémon não aprende golpes subindo de nível.
-              </p>
-            )}
-          </InfoPanel>
+          <MovesPanel pokemon={pokemon} />
         </section>
       </m.div>
 
       {evolutionStages.length > 1 ? (
         <div className="pb-4">
           <InfoPanel title="Evolução">
-            <EvolutionChain stages={evolutionStages} currentId={pokemon.id} onSelect={onSelectPokemon} />
+            <EvolutionChain
+              stages={evolutionStages}
+              currentSpeciesId={getSpeciesId(pokemon)}
+              onSelect={onSelectPokemon}
+            />
+          </InfoPanel>
+        </div>
+      ) : null}
+
+      {varieties.length > 1 ? (
+        <div className="pb-4">
+          <InfoPanel title="Formas">
+            <PokemonForms varieties={varieties} currentName={pokemon.name} onSelect={onSelectPokemon} />
           </InfoPanel>
         </div>
       ) : null}
     </m.article>
+  );
+}
+
+function TypeMatchups({ effectiveness }) {
+  const { groups, strongAgainst, isLoading, failed } = effectiveness;
+
+  if (isLoading) return <PanelNote>Carregando...</PanelNote>;
+  if (failed) return <PanelNote>Não consegui carregar as relações de tipo.</PanelNote>;
+
+  return (
+    <div className="grid gap-3">
+      <p className="font-pixel text-base font-black uppercase leading-5 text-dex-ink">Dano recebido</p>
+      {groups.length ? (
+        groups.map(group => (
+          <div key={group.multiplier} className="grid gap-2">
+            <span className="font-pixel text-lg font-black uppercase leading-5 text-emerald-950/60">{group.label}</span>
+            <div className="flex flex-wrap gap-2">
+              {group.types.map(type => (
+                <TypeBadge key={type} type={type} />
+              ))}
+            </div>
+          </div>
+        ))
+      ) : (
+        <PanelNote>Sem vantagens ou fraquezas fora do normal.</PanelNote>
+      )}
+
+      {strongAgainst.length ? (
+        <>
+          <p className="mt-2 font-pixel text-base font-black uppercase leading-5 text-dex-ink">Forte contra</p>
+          <div className="flex flex-wrap gap-2">
+            {strongAgainst.map(type => (
+              <TypeBadge key={type} type={type} />
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 }
 
@@ -267,36 +328,4 @@ function NavButton({ icon, label, onClick, disabled }) {
       <Icon name={icon} size={20} strokeWidth={3} />
     </m.button>
   );
-}
-
-function InfoPanel({ title, children }) {
-  return (
-    <m.div
-      className="rounded-lg border-2 border-emerald-950/20 bg-white/45 p-4 shadow-[inset_0_-4px_0_rgba(20,32,51,0.06)]"
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28 }}
-    >
-      <h3 className="mb-4 font-pixel text-xl font-black uppercase leading-6 text-dex-ink sm:text-2xl">{title}</h3>
-      {children}
-    </m.div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-3 border-b-2 border-emerald-950/10 py-2 last:border-b-0">
-      <span className="font-pixel text-lg font-black uppercase text-emerald-950/60">{label}</span>
-      <strong className="font-display text-base leading-5 text-dex-ink">{value}</strong>
-    </div>
-  );
-}
-
-function countSprites(sprites) {
-  return Object.values(sprites).reduce((total, value) => {
-    if (!value) return total;
-    if (typeof value === "string") return total + 1;
-    if (typeof value === "object") return total + countSprites(value);
-    return total;
-  }, 0);
 }

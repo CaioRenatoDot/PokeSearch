@@ -1,8 +1,8 @@
 import { m } from "motion/react";
 import { typeStyles } from "../data/pokemon.js";
-import { formatName } from "../utils/formatters.js";
+import { formatTypeName } from "../utils/formatters.js";
 
-export default function TypeBadge({ type }) {
+export default function TypeBadge({ type, suffix }) {
   return (
     <m.span
       className={`type-badge rounded-lg px-3 py-2 font-pixel text-base font-black uppercase leading-5 text-white ${typeStyles[type] || "bg-dex-dark"}`}
@@ -11,7 +11,8 @@ export default function TypeBadge({ type }) {
       transition={{ duration: 0.25 }}
       whileHover={{ y: -2, scale: 1.04 }}
     >
-      {formatName(type)}
+      {formatTypeName(type)}
+      {suffix ? <span className="ml-1.5 opacity-80">{suffix}</span> : null}
     </m.span>
   );
 }

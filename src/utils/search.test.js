@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSearchLabel, normalizePokemonQuery } from "./search.js";
+import { findClosestNames, formatSearchLabel, normalizePokemonQuery, rankSuggestions } from "./search.js";
 
 describe("normalizePokemonQuery", () => {
   it("normaliza caixa, espaços e acentos", () => {
@@ -21,6 +21,69 @@ describe("normalizePokemonQuery", () => {
   it("devolve string vazia para entrada sem letras", () => {
     expect(normalizePokemonQuery("   ")).toBe("");
     expect(normalizePokemonQuery("---")).toBe("");
+  });
+});
+
+describe("rankSuggestions", () => {
+  const list = [
+    { id: 25, name: "pikachu" },
+    { id: 133, name: "eevee" },
+    { id: 151, name: "mew" },
+    { id: 150, name: "mewtwo" },
+    { id: 646, name: "kyurem" },
+    { id: 10022, name: "kyurem-black" },
+    { id: 10034, name: "charizard-mega-x" },
+    { id: 196, name: "espeon" },
+    { id: 6, name: "charizard" }
+  ];
+
+  it("prefere quem começa com o termo a quem só o contém", () => {
+    expect(rankSuggestions(list, "e")[0]).toBe("eevee");
+  });
+
+  it("traz a espécie antes das formas", () => {
+    expect(rankSuggestions(list, "char")).toEqual(["charizard", "charizard-mega-x"]);
+  });
+
+  it("não sugere o próprio termo já completo", () => {
+    expect(rankSuggestions(list, "mew")).toEqual(["mewtwo"]);
+  });
+
+  it("encontra pelo número", () => {
+    expect(rankSuggestions(list, "25")).toEqual(["pikachu"]);
+  });
+
+  it("acha as formas pela segunda parte do nome", () => {
+    expect(rankSuggestions(list, "black")).toEqual(["kyurem-black"]);
+  });
+
+  it("respeita o limite e ignora termo vazio", () => {
+    expect(rankSuggestions(list, "e", 2)).toHaveLength(2);
+    expect(rankSuggestions(list, "")).toEqual([]);
+  });
+});
+
+describe("findClosestNames", () => {
+  const list = [
+    { id: 6, name: "charizard" },
+    { id: 25, name: "pikachu" },
+    { id: 151, name: "mew" },
+    { id: 52, name: "meowth" }
+  ];
+
+  it("corrige erros de digitação", () => {
+    expect(findClosestNames(list, "charzard")).toEqual(["charizard"]);
+    expect(findClosestNames(list, "pikachuu")).toEqual(["pikachu"]);
+    expect(findClosestNames(list, "picachu")).toEqual(["pikachu"]);
+  });
+
+  it("não chuta quando o termo está longe de tudo", () => {
+    expect(findClosestNames(list, "digimon")).toEqual([]);
+  });
+
+  it("ignora números e termos curtos demais", () => {
+    expect(findClosestNames(list, "9999")).toEqual([]);
+    expect(findClosestNames(list, "me")).toEqual([]);
   });
 });
 
