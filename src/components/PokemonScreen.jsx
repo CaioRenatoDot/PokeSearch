@@ -6,6 +6,7 @@ import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
 import PokemonGrid from "./PokemonGrid.jsx";
 import ComparisonView from "./ComparisonView.jsx";
+import TeamView from "./TeamView.jsx";
 
 // Abaixo de "lg" o painel de busca fica em cima e o resultado nasceria fora da tela.
 const STACKED_LAYOUT_QUERY = "(max-width: 1023px)";
@@ -20,15 +21,16 @@ export default function PokemonScreen({
   navigation,
   view,
   browser,
-  comparison,
   favorites,
+  team,
+  pokemonList,
+  comparison,
   onSelectPokemon
 }) {
-  const isBrowsing = view === "browse";
+  const isDetail = view === "detail";
   const pinned = comparison.pinned;
   const isComparing =
-    !isBrowsing && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
-
+    isDetail && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
   const sectionRef = useRef(null);
   const hasShownContentRef = useRef(false);
   const pokemonId = pokemon?.id;
@@ -74,8 +76,16 @@ export default function PokemonScreen({
 
       <div className="relative z-0 flex h-full min-h-[64dvh] p-3 sm:min-h-[70dvh] sm:p-6 lg:min-h-0 lg:p-8">
         <AnimatePresence mode="wait">
-          {isBrowsing ? (
+          {view === "browse" ? (
             <PokemonGrid key="grid" browser={browser} favorites={favorites} onSelect={onSelectPokemon} />
+          ) : view === "team" ? (
+            <TeamView
+              key="team"
+              team={team}
+              pokemonList={pokemonList}
+              currentPokemon={pokemon}
+              onSelect={onSelectPokemon}
+            />
           ) : isComparing ? (
             <ComparisonView
               key={`compare-${pinned.id}-${pokemon.id}`}
@@ -93,6 +103,7 @@ export default function PokemonScreen({
               hasNext={navigation.hasNext}
               onSelectPokemon={onSelectPokemon}
               favorites={favorites}
+              team={team}
               comparison={{
                 isPinned: Boolean(pinned),
                 onPin: comparison.onPin,
@@ -114,7 +125,7 @@ export default function PokemonScreen({
       </div>
 
       <AnimatePresence>
-        {!isBrowsing && !isComparing && status === "ready" && pokemon ? (
+        {isDetail && !isComparing && status === "ready" && pokemon ? (
           <PixelReveal key={`pixels-${pokemon.id}`} triggerKey={pokemon.id} />
         ) : null}
       </AnimatePresence>

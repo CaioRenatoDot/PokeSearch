@@ -58,6 +58,7 @@ export default function PokemonCard({
   hasNext,
   comparison,
   favorites,
+  team,
   onSelectPokemon
 }) {
   const [spriteMode, setSpriteMode] = useState("animated");
@@ -77,6 +78,7 @@ export default function PokemonCard({
   const statTotal = pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
   const rarity = getRarityLabel(species);
   const isFavorite = favorites.isFavorite(pokemon.name);
+  const isInTeam = team.isInTeam(pokemon.name);
   const speciesFallback = isSpeciesLoading ? "Carregando..." : "—";
 
   return (
@@ -156,6 +158,16 @@ export default function PokemonCard({
               onClick={() => favorites.toggle(pokemon.name)}
             >
               {isFavorite ? "Favorito" : "Favoritar"}
+            </ActionButton>
+            <ActionButton
+              icon={isInTeam ? "check" : "plus"}
+              isActive={isInTeam}
+              aria-pressed={isInTeam}
+              disabled={!isInTeam && team.isFull}
+              title={!isInTeam && team.isFull ? "O time já tem 6 pokémon" : undefined}
+              onClick={() => team.toggle(pokemon.name)}
+            >
+              {isInTeam ? "No time" : "Time"}
             </ActionButton>
             {comparison.isPinned ? null : (
               <ActionButton icon="compare" onClick={() => comparison.onPin(pokemon)}>

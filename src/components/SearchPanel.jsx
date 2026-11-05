@@ -1,5 +1,6 @@
 import { m } from "motion/react";
 import { suggestions as quickSuggestions } from "../data/pokemon.js";
+import { MAX_TEAM_SIZE } from "../utils/team.js";
 import Icon from "./Icon.jsx";
 import PanelTabs from "./PanelTabs.jsx";
 import PokeballMark from "./PokeballMark.jsx";
@@ -7,7 +8,8 @@ import SearchBox from "./SearchBox.jsx";
 
 const viewOptions = [
   { id: "detail", label: "Detalhe" },
-  { id: "browse", label: "Explorar" }
+  { id: "browse", label: "Explorar" },
+  { id: "team", label: "Time" }
 ];
 
 export default function SearchPanel({
@@ -27,7 +29,8 @@ export default function SearchPanel({
   volume,
   onChangeVolume,
   view,
-  onChangeView
+  onChangeView,
+  teamSize
 }) {
   const volumePercent = Math.round(volume * 100);
 
@@ -113,14 +116,14 @@ export default function SearchPanel({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Modo do visor">
+      <div className="grid grid-cols-3 gap-2" role="group" aria-label="Modo do visor">
         {viewOptions.map(option => {
           const isActive = option.id === view;
 
           return (
             <m.button
               key={option.id}
-              className={`min-h-12 rounded-lg border-2 px-3 font-pixel text-lg font-black uppercase leading-5 transition ${
+              className={`min-h-12 rounded-lg border-2 px-1 font-pixel text-base font-black uppercase leading-5 transition ${
                 isActive
                   ? "border-white/40 bg-amber-300 text-dex-ink shadow-[inset_0_-4px_0_rgba(91,55,0,0.18)]"
                   : "border-white/20 bg-slate-950/20 text-white/75 hover:bg-white/20"
@@ -132,6 +135,7 @@ export default function SearchPanel({
               whileTap={{ scale: 0.98 }}
             >
               {option.label}
+              {option.id === "team" && teamSize ? ` ${teamSize}/${MAX_TEAM_SIZE}` : ""}
             </m.button>
           );
         })}
@@ -147,7 +151,7 @@ export default function SearchPanel({
       />
 
       <p className="hidden font-pixel text-xs font-bold uppercase leading-4 text-white/55 lg:block">
-        / buscar · ← → navegar · R sortear · F favoritar
+        / buscar · ← → navegar · R sortear · F favoritar · T time
       </p>
 
       <PanelTabs

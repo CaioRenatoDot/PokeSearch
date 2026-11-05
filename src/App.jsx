@@ -9,6 +9,7 @@ import { useSoundPreference } from "./hooks/useSoundPreference.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
 import { usePokemonBrowser } from "./hooks/usePokemonBrowser.js";
 import { useStoredState } from "./hooks/useStoredState.js";
+import { useTeam } from "./hooks/useTeam.js";
 import { formatName, formatPokemonNumber } from "./utils/formatters.js";
 import { readUrlState, updateUrl } from "./utils/url.js";
 
@@ -23,6 +24,7 @@ export default function App() {
   const search = usePokemonSearch(FALLBACK_POKEMON);
   const { pokemon, status, message, pokemonList } = search;
   const favorites = useFavorites();
+  const team = useTeam();
   const browser = usePokemonBrowser(pokemonList, favorites.names);
 
   function showDetail(action) {
@@ -61,6 +63,9 @@ export default function App() {
     onRandom: handleRandom,
     onToggleFavorite: () => {
       if (pokemon) favorites.toggle(pokemon.name);
+    },
+    onToggleTeam: () => {
+      if (pokemon && (team.isInTeam(pokemon.name) || !team.isFull)) team.toggle(pokemon.name);
     }
   });
 
@@ -73,6 +78,7 @@ export default function App() {
       const targetName = state.pokemon || FALLBACK_POKEMON;
 
       setView(state.view);
+      team.syncWithUrl();
 
       if (targetName !== pokemon?.name) {
         search.searchPokemon(targetName, { history: "none" });
@@ -141,6 +147,7 @@ export default function App() {
         onChangeVolume={changeVolume}
         view={view}
         onChangeView={handleChangeView}
+        teamSize={team.ownNames.length}
       />
       <PokemonScreen
         pokemon={pokemon}
@@ -152,6 +159,8 @@ export default function App() {
         view={view}
         browser={browser}
         favorites={favorites}
+        team={team}
+        pokemonList={pokemonList}
         onSelectPokemon={handleSearch}
         comparison={{
           pinned: pinnedPokemon,

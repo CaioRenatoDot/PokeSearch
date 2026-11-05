@@ -35,7 +35,8 @@ export function useKeyboardShortcuts(handlers) {
         ArrowLeft: handlersRef.current.onPrevious,
         ArrowRight: handlersRef.current.onNext,
         r: handlersRef.current.onRandom,
-        f: handlersRef.current.onToggleFavorite
+        f: handlersRef.current.onToggleFavorite,
+        t: handlersRef.current.onToggleTeam
       }[event.key.length === 1 ? event.key.toLowerCase() : event.key];
 
       if (action) {
