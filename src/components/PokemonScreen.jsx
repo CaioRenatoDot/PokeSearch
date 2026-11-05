@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { AnimatePresence, m } from "motion/react";
 import { formatName, formatPokemonNumber } from "../utils/formatters.js";
 import EmptyState from "./EmptyState.jsx";
@@ -5,6 +6,9 @@ import PokemonCard from "./PokemonCard.jsx";
 import PixelReveal from "./PixelReveal.jsx";
 import PokemonGrid from "./PokemonGrid.jsx";
 import ComparisonView from "./ComparisonView.jsx";
+
+// Abaixo de "lg" o painel de busca fica em cima e o resultado nasceria fora da tela.
+const STACKED_LAYOUT_QUERY = "(max-width: 1023px)";
 
 export default function PokemonScreen({
   pokemon,
@@ -25,8 +29,27 @@ export default function PokemonScreen({
   const isComparing =
     !isBrowsing && Boolean(pinned) && status === "ready" && Boolean(pokemon) && pokemon.id !== pinned.id;
 
+  const sectionRef = useRef(null);
+  const hasShownContentRef = useRef(false);
+  const pokemonId = pokemon?.id;
+
+  useEffect(() => {
+    if (!pokemonId && status !== "error") return;
+
+    // A primeira resposta chega sozinha ao abrir a página; só depois a rolagem responde a um pedido.
+    if (!hasShownContentRef.current) {
+      hasShownContentRef.current = true;
+      return;
+    }
+
+    if (window.matchMedia(STACKED_LAYOUT_QUERY).matches) {
+      sectionRef.current?.scrollIntoView({ block: "start" });
+    }
+  }, [pokemonId, status, view]);
+
   return (
     <m.section
+      ref={sectionRef}
       className="pokemon-screen relative min-h-[70dvh] min-w-0 overflow-hidden rounded-lg border-[7px] border-dex-dark bg-dex-screen shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),inset_0_0_52px_rgba(18,48,46,0.2)] sm:border-[10px] lg:h-full lg:min-h-0 lg:rounded-l-none"
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
